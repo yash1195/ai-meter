@@ -29,6 +29,29 @@ data boundary and update-check network behavior.
 swift run AIUsageMonitor
 ```
 
+## Install an official release
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/yash1195/ai-meter/main/install.sh | sh
+```
+
+The installer downloads the latest `AI-Meter.zip`, verifies the bundle ID,
+Apple code signature, and Developer ID team, then installs AI Meter in
+`~/Applications`. You can inspect [install.sh](install.sh) before running it.
+
+## Website
+
+The marketing site lives in `website/` and exports as plain static files for
+GitHub Pages, S3, or any other static host:
+
+```sh
+cd website
+npm install
+npm test
+```
+
+The deployable output is written to `website/out/`.
+
 ## Test
 
 ```sh
