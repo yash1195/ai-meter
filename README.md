@@ -147,14 +147,15 @@ The manifest format is:
 ```json
 {
   "version": "0.2.0",
-  "build": 2,
-  "releaseURL": "https://github.com/yash1195/ai-meter/releases/tag/v0.2.0"
+  "build": 6,
+  "releaseURL": "https://github.com/yash1195/ai-meter/releases/latest/download/AI-Meter.dmg"
 }
 ```
 
 The monotonic `build` value is compared with `CFBundleVersion`. When a newer
 build exists, the widget presents an **Update to latest** button that opens the
-signed, notarized release. AI Meter does not install updates automatically.
+signed, notarized DMG download. AI Meter does not install updates
+automatically; macOS still asks the user to drag AI Meter into Applications.
 
 ## License
 
