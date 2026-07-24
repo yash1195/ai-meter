@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s — AI Meter",
   },
   description:
-    "Track Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+    "Track coding-agent token usage, electricity, and water estimates—entirely on your Mac.",
   metadataBase: new URL("https://yash1195.github.io/ai-meter"),
 };
 

@@ -1,12 +1,20 @@
 # AI Meter
 
-A local macOS menu-bar dashboard that totals token usage across concurrent Codex
-and Claude Code sessions.
+A local macOS menu-bar dashboard that totals token usage across concurrent AI
+coding-agent sessions.
 
-The app locally scans provider records stored at:
+AI Meter currently reads:
 
-- `~/.codex/sessions/**/*.jsonl`
-- `~/.claude/projects/**/*.jsonl`
+| Coding harness | Local source | Status |
+| --- | --- | --- |
+| Codex | `$CODEX_HOME/sessions/**/*.jsonl` (default `~/.codex`) | Provider-reported cumulative usage |
+| Claude Code | `$CLAUDE_CONFIG_DIR/projects/**/*.jsonl` (default `~/.claude`) | Provider-reported message usage |
+| OpenCode | `$XDG_DATA_HOME/opencode/opencode*.db` (default `~/.local/share`) | Provider-reported message usage |
+| Gemini CLI | `$GEMINI_CLI_HOME/.gemini/tmp/**/chats/**/*.jsonl` (default `~`) | Provider-reported message usage |
+
+Model names are discovered from the records rather than kept in a hard-coded
+model list. New OpenAI, Anthropic, Google, OpenCode, gateway, or local model
+names therefore appear automatically when a supported harness records them.
 
 It extracts usage metadata without retaining or transmitting prompt, response,
 source-code, or tool-output content. See [PRIVACY.md](PRIVACY.md) for the exact
@@ -16,7 +24,7 @@ data boundary and update-check network behavior.
 
 - Clicking the menu-bar total opens a native dropdown dashboard.
 - Periods: Today, This Week, Month, Year to Date, and Lifetime.
-- Interactive hourly, daily, or monthly chart with Codex and Claude Code series.
+- Interactive hourly, daily, or monthly chart with one series per coding harness.
 - Provider filters and provider/model breakdowns from actual local metadata.
 - Token, estimated electricity, and estimated water chart modes.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
@@ -84,8 +92,20 @@ Apple notarization.
   second time.
 - Claude Code reports ordinary input, cache creation, cache reads, and output
   separately; all four categories contribute to the total.
-- Claude messages are deduplicated by provider message ID.
+- OpenCode stores normalized input, cache, output, and reasoning counts in its
+  local SQLite message ledger. Reasoning is included once in the token total.
+- Gemini CLI stores per-response input, cached, output, thought, and total
+  counts in its local chat recordings.
+- Repeated message records are deduplicated by harness and message ID.
 - Events are assigned to a day using the Mac's current calendar and time zone.
+
+## Compatibility policy
+
+AI Meter adds a harness only when it exposes a stable local record containing
+both timestamps and provider-reported token counts. Cursor, GitHub Copilot, and
+Aider are not currently counted because they do not expose an equivalent
+documented local token ledger. AI Meter does not estimate their usage from
+message text or inspect undocumented editor databases.
 
 ## Environmental estimates
 

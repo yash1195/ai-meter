@@ -1,4 +1,5 @@
 import AppKit
+import SQLite3
 import XCTest
 @testable import AIUsageMonitor
 
@@ -32,10 +33,11 @@ final class UsageLogParserTests: XCTestCase {
         let line = #"{"type":"assistant","timestamp":"2026-07-22T18:42:10.000Z","sessionId":"session-1","uuid":"entry-1","message":{"id":"msg_1","usage":{"input_tokens":100,"cache_creation_input_tokens":300,"cache_read_input_tokens":700,"output_tokens":200}}}"#
 
         let event = UsageLogParser.parse(lineData: Data(line.utf8), provider: .claude)
-        guard case let .claudeMessage(_, messageID, sessionID, model, counts) = event else {
+        guard case let .message(provider, _, messageID, sessionID, model, counts) = event else {
             return XCTFail("Expected a Claude message event")
         }
 
+        XCTAssertEqual(provider, .claude)
         XCTAssertEqual(messageID, "msg_1")
         XCTAssertEqual(sessionID, "session-1")
         XCTAssertEqual(model, "Unknown Claude model")
@@ -44,6 +46,62 @@ final class UsageLogParserTests: XCTestCase {
         XCTAssertEqual(counts.cachedInputTokens, 700)
         XCTAssertEqual(counts.outputTokens, 200)
         XCTAssertEqual(counts.totalTokens, 1300)
+    }
+
+    func testGeminiMessageReadsOfficialRecordingTokenFields() throws {
+        let line = #"{"id":"gemini-1","timestamp":"2026-07-22T18:42:10.000Z","type":"gemini","model":"gemini-2.5-pro","tokens":{"input":1000,"output":200,"total":1250,"cached":400,"thoughts":50,"tool":0}}"#
+
+        let event = UsageLogParser.parse(lineData: Data(line.utf8), provider: .geminiCLI)
+        guard case let .message(provider, _, messageID, _, model, counts) = event else {
+            return XCTFail("Expected a Gemini CLI message event")
+        }
+
+        XCTAssertEqual(provider, .geminiCLI)
+        XCTAssertEqual(messageID, "gemini-1")
+        XCTAssertEqual(model, "gemini-2.5-pro")
+        XCTAssertEqual(counts.uncachedInputTokens, 600)
+        XCTAssertEqual(counts.cachedInputTokens, 400)
+        XCTAssertEqual(counts.outputTokens, 250)
+        XCTAssertEqual(counts.reasoningTokens, 50)
+        XCTAssertEqual(counts.totalTokens, 1250)
+    }
+
+    func testOpenCodeReaderUsesPortableSQLiteLedger() throws {
+        let fileManager = FileManager.default
+        let directory = fileManager.temporaryDirectory
+            .appendingPathComponent("AIUsageMonitor-OpenCode-\(UUID().uuidString)", isDirectory: true)
+        defer { try? fileManager.removeItem(at: directory) }
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        let databaseURL = directory.appendingPathComponent("opencode.db")
+
+        var database: OpaquePointer?
+        XCTAssertEqual(sqlite3_open(databaseURL.path, &database), SQLITE_OK)
+        defer { sqlite3_close(database) }
+        let timestamp = Int64(Date().timeIntervalSince1970 * 1_000)
+        let sql = """
+        CREATE TABLE message (id TEXT, session_id TEXT, time_created INTEGER, data TEXT);
+        INSERT INTO message VALUES (
+          'msg-1',
+          'session-1',
+          \(timestamp),
+          '{"role":"assistant","providerID":"anthropic","modelID":"claude-sonnet-4","tokens":{"input":100,"output":30,"reasoning":20,"cache":{"read":400,"write":50}}}'
+        );
+        """
+        XCTAssertEqual(sqlite3_exec(database, sql, nil, nil, nil), SQLITE_OK)
+
+        let result = try OpenCodeUsageReader.read(databaseURL: databaseURL, calendar: .current)
+        let counts = result.daily.values.first?.total
+        XCTAssertEqual(counts?.uncachedInputTokens, 100)
+        XCTAssertEqual(counts?.cachedInputTokens, 400)
+        XCTAssertEqual(counts?.cacheWriteTokens, 50)
+        XCTAssertEqual(counts?.outputTokens, 50)
+        XCTAssertEqual(counts?.reasoningTokens, 20)
+        XCTAssertEqual(counts?.totalTokens, 600)
+        XCTAssertEqual(
+            result.daily.values.first?.dimensions.keys.first?.model,
+            "anthropic/claude-sonnet-4"
+        )
+        XCTAssertEqual(result.messageCount, 1)
     }
 
     func testCodexDeltaDoesNotDoubleCountCumulativeTotals() {

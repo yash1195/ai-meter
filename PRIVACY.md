@@ -4,14 +4,17 @@ AI Meter is designed to calculate usage locally.
 
 ## Local files
 
-AI Meter scans JSONL records stored by Codex and Claude Code:
+AI Meter scans local usage records stored by supported coding harnesses:
 
-- `~/.codex/sessions/**/*.jsonl`
-- `~/.claude/projects/**/*.jsonl`
+- `$CODEX_HOME/sessions/**/*.jsonl` (default `~/.codex`)
+- `$CLAUDE_CONFIG_DIR/projects/**/*.jsonl` (default `~/.claude`)
+- `$XDG_DATA_HOME/opencode/opencode*.db` (default `~/.local/share`)
+- `$GEMINI_CLI_HOME/.gemini/tmp/**/chats/**/*.jsonl` (default `~`)
 
-The records are processed on the Mac to extract timestamps, provider and model
-names, session identifiers, and provider-reported token counts. AI Meter does
-not extract or retain prompt text, response text, source code, or tool output.
+The JSONL and SQLite records are processed on the Mac to extract timestamps,
+coding-harness and model names, session identifiers, and provider-reported
+token counts. AI Meter does not extract or retain prompt text, response text,
+source code, or tool output.
 
 Usage history is rebuilt from the local provider files. AI Meter stores only
 interface preferences and environmental-estimation assumptions in

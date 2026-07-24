@@ -44,8 +44,7 @@ enum UsageReportBuilder {
             bins.append(
                 UsageSeriesBin(
                     start: cursor,
-                    codex: values[.codex] ?? .zero,
-                    claude: values[.claude] ?? .zero
+                    providers: values
                 )
             )
             guard let next = calendar.date(byAdding: component, value: 1, to: cursor), next > cursor else {

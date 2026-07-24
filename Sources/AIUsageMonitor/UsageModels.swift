@@ -3,14 +3,27 @@ import Foundation
 enum UsageProvider: String, CaseIterable, Hashable, Sendable, Identifiable {
     case codex = "Codex"
     case claude = "Claude Code"
+    case openCode = "OpenCode"
+    case geminiCLI = "Gemini CLI"
 
     var id: String { rawValue }
+
+    var unknownModelName: String {
+        switch self {
+        case .codex: "Unknown Codex model"
+        case .claude: "Unknown Claude model"
+        case .openCode: "Unknown OpenCode model"
+        case .geminiCLI: "Unknown Gemini model"
+        }
+    }
 }
 
 enum ProviderFilter: String, CaseIterable, Identifiable {
     case all = "All"
     case codex = "Codex"
     case claude = "Claude"
+    case openCode = "OpenCode"
+    case geminiCLI = "Gemini"
 
     var id: String { rawValue }
 
@@ -19,6 +32,8 @@ enum ProviderFilter: String, CaseIterable, Identifiable {
         case .all: true
         case .codex: provider == .codex
         case .claude: provider == .claude
+        case .openCode: provider == .openCode
+        case .geminiCLI: provider == .geminiCLI
         }
     }
 }
@@ -165,18 +180,19 @@ struct ResourceAssumptions: Equatable, Sendable {
 
 struct UsageSeriesBin: Identifiable, Equatable {
     let start: Date
-    let codex: UsageCounts
-    let claude: UsageCounts
+    let providers: [UsageProvider: UsageCounts]
 
     var id: Date { start }
-    var total: UsageCounts { codex + claude }
+    var total: UsageCounts { providers.values.reduce(.zero, +) }
 
     func counts(for filter: ProviderFilter) -> UsageCounts {
-        switch filter {
-        case .all: total
-        case .codex: codex
-        case .claude: claude
+        providers.reduce(into: .zero) { result, entry in
+            if filter.includes(entry.key) { result += entry.value }
         }
+    }
+
+    func counts(for provider: UsageProvider) -> UsageCounts {
+        providers[provider] ?? .zero
     }
 }
 
@@ -201,7 +217,8 @@ struct UsageReport: Equatable {
 enum ParsedUsageEvent: Equatable {
     case codexContext(timestamp: Date, model: String)
     case codexCumulative(timestamp: Date, counts: UsageCounts)
-    case claudeMessage(
+    case message(
+        provider: UsageProvider,
         timestamp: Date,
         messageID: String,
         sessionID: String,

@@ -7,11 +7,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://ai-meter.app"),
   title: "AI Meter — Local AI usage for your Mac",
   description:
-    "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+    "See coding-agent token usage, electricity, and water estimates—entirely on your Mac.",
   openGraph: {
     title: "AI Meter — Measure your AI locally",
     description:
-      "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+      "See Codex, Claude Code, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     url: "https://ai-meter.app/",
     siteName: "AI Meter",
     type: "website",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "AI Meter — local Codex and Claude Code usage for macOS",
+        alt: "AI Meter — local coding-agent usage for macOS",
       },
     ],
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AI Meter — Measure your AI locally",
     description:
-      "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+      "See Codex, Claude Code, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     images: ["/og-image.png"],
   },
 };
@@ -76,8 +76,8 @@ export default function Home() {
           </h1>
 
           <p className="lede">
-            AI Meter shows your Codex and Claude Code token usage, electricity,
-            and water estimates in the macOS menu bar. No accounts. No AI
+            AI Meter shows your coding-agent token usage, electricity, and
+            water estimates in the macOS menu bar. No accounts. No AI
             telemetry. No usage data leaves your Mac.
           </p>
 
@@ -138,8 +138,8 @@ export default function Home() {
             <strong className="method-symbol">#</strong>
             <h3>Provider-reported tokens</h3>
             <p>
-              Codex and Claude Code token counts are read from local provider
-              records, deduplicated, and combined on your Mac.
+              Codex, Claude Code, OpenCode, and Gemini CLI token counts are
+              read from local records, deduplicated, and combined on your Mac.
             </p>
           </article>
 
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       <footer className="footer shell">
-        <span>Codex + Claude Code</span>
+        <span>Codex · Claude Code · OpenCode · Gemini CLI</span>
         <span>Free for individuals and companies</span>
         <span>© 2026 AI Meter</span>
       </footer>

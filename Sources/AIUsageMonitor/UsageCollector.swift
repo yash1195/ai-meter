@@ -15,9 +15,11 @@ actor UsageCollector {
 
     private let fileManager = FileManager.default
     private let calendar: Calendar
-    private let roots: [UsageProvider: URL]
+    private let jsonlRoots: [UsageProvider: [URL]]
+    private let openCodeDataRoot: URL
     private var states: [URL: FileState] = [:]
-    private var seenClaudeMessageIDs = Set<String>()
+    private var observedMessageCounts: [String: UsageCounts] = [:]
+    private var openCodeResults: [URL: OpenCodeUsageResult] = [:]
     private var sessionActivity: [String: Date] = [:]
     private var lastDiscovery = Date.distantPast
 
@@ -26,15 +28,34 @@ actor UsageCollector {
         calendar: Calendar = .current
     ) {
         self.calendar = calendar
-        self.roots = [
-            .codex: homeDirectory.appendingPathComponent(".codex/sessions", isDirectory: true),
-            .claude: homeDirectory.appendingPathComponent(".claude/projects", isDirectory: true)
+        let defaultHome = FileManager.default.homeDirectoryForCurrentUser.standardizedFileURL
+        let environment = homeDirectory.standardizedFileURL == defaultHome
+            ? ProcessInfo.processInfo.environment
+            : [:]
+        let codexHome = environment["CODEX_HOME"].map {
+            URL(fileURLWithPath: $0, isDirectory: true)
+        } ?? homeDirectory.appendingPathComponent(".codex", isDirectory: true)
+        let claudeHome = environment["CLAUDE_CONFIG_DIR"].map {
+            URL(fileURLWithPath: $0, isDirectory: true)
+        } ?? homeDirectory.appendingPathComponent(".claude", isDirectory: true)
+        let geminiHome = environment["GEMINI_CLI_HOME"].map {
+            URL(fileURLWithPath: $0, isDirectory: true)
+        } ?? homeDirectory
+        let xdgData = environment["XDG_DATA_HOME"].map {
+            URL(fileURLWithPath: $0, isDirectory: true)
+        } ?? homeDirectory.appendingPathComponent(".local/share", isDirectory: true)
+        self.jsonlRoots = [
+            .codex: [codexHome.appendingPathComponent("sessions", isDirectory: true)],
+            .claude: [claudeHome.appendingPathComponent("projects", isDirectory: true)],
+            .geminiCLI: [geminiHome.appendingPathComponent(".gemini/tmp", isDirectory: true)]
         ]
+        self.openCodeDataRoot = xdgData.appendingPathComponent("opencode", isDirectory: true)
     }
 
     func refresh(now: Date = Date()) -> UsageSnapshot {
         if now.timeIntervalSince(lastDiscovery) >= 3 {
             discoverFiles()
+            refreshOpenCode()
             lastDiscovery = now
         }
 
@@ -59,44 +80,75 @@ actor UsageCollector {
 
     private func rebuildAll() {
         states.removeAll(keepingCapacity: true)
-        seenClaudeMessageIDs.removeAll(keepingCapacity: true)
+        observedMessageCounts.removeAll(keepingCapacity: true)
+        openCodeResults.removeAll(keepingCapacity: true)
         sessionActivity.removeAll(keepingCapacity: true)
         lastDiscovery = .distantPast
         discoverFiles()
+        refreshOpenCode()
         for url in Array(states.keys) {
             try? consumeNewData(at: url)
         }
     }
 
     private func discoverFiles() {
-        for (provider, root) in roots {
-            guard fileManager.fileExists(atPath: root.path) else { continue }
+        for (provider, roots) in jsonlRoots {
+            for root in roots {
+                discoverJSONLFiles(for: provider, under: root)
+            }
+        }
+    }
 
-            let keys: [URLResourceKey] = [.isRegularFileKey]
-            guard let enumerator = fileManager.enumerator(
-                at: root,
-                includingPropertiesForKeys: keys,
-                options: [.skipsPackageDescendants]
-            ) else {
+    private func discoverJSONLFiles(for provider: UsageProvider, under root: URL) {
+        guard fileManager.fileExists(atPath: root.path) else { return }
+
+        let keys: [URLResourceKey] = [.isRegularFileKey]
+        guard let enumerator = fileManager.enumerator(
+            at: root,
+            includingPropertiesForKeys: keys,
+            options: [.skipsPackageDescendants]
+        ) else {
+            return
+        }
+
+        for case let url as URL in enumerator where url.pathExtension == "jsonl" {
+            guard
+                states[url] == nil,
+                let values = try? url.resourceValues(forKeys: Set(keys)),
+                values.isRegularFile == true
+            else {
                 continue
             }
 
-            for case let url as URL in enumerator where url.pathExtension == "jsonl" {
-                guard
-                    states[url] == nil,
-                    let values = try? url.resourceValues(forKeys: Set(keys)),
-                    values.isRegularFile == true
-                else {
-                    continue
-                }
+            states[url] = FileState(
+                provider: provider,
+                currentModel: provider.unknownModelName,
+                sessionID: url.deletingPathExtension().lastPathComponent
+            )
+        }
+    }
 
-                states[url] = FileState(
-                    provider: provider,
-                    currentModel: provider == .codex ? "Unknown Codex model" : "Unknown Claude model",
-                    sessionID: url.deletingPathExtension().lastPathComponent
-                )
+    private func refreshOpenCode() {
+        guard
+            let files = try? fileManager.contentsOfDirectory(
+                at: openCodeDataRoot,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: [.skipsHiddenFiles]
+            )
+        else {
+            return
+        }
+
+        let databases = files.filter {
+            $0.pathExtension == "db" && $0.lastPathComponent.hasPrefix("opencode")
+        }
+        var refreshed: [URL: OpenCodeUsageResult] = [:]
+        for database in databases {
+            if let result = try? OpenCodeUsageReader.read(databaseURL: database, calendar: calendar) {
+                refreshed[database] = result
             }
         }
+        openCodeResults = refreshed
     }
 
     private func consumeNewData(at url: URL) throws {
@@ -151,17 +203,21 @@ actor UsageCollector {
             )
             recordActivity(provider: .codex, sessionID: state.sessionID, at: timestamp)
 
-        case let .claudeMessage(timestamp, messageID, sessionID, model, counts):
-            let uniqueID = "claude:\(messageID)"
-            guard seenClaudeMessageIDs.insert(uniqueID).inserted else { return }
-            state.sessionID = sessionID
+        case let .message(provider, timestamp, messageID, sessionID, model, counts):
+            let uniqueID = "\(provider.rawValue):\(messageID)"
+            let delta = counts.delta(from: observedMessageCounts[uniqueID])
+            observedMessageCounts[uniqueID] = counts
+            guard delta.totalTokens > 0 else { return }
+            if sessionID != "unknown" {
+                state.sessionID = sessionID
+            }
             add(
-                counts,
+                delta,
                 at: timestamp,
-                dimension: UsageDimension(provider: .claude, model: model),
+                dimension: UsageDimension(provider: provider, model: model),
                 to: &state
             )
-            recordActivity(provider: .claude, sessionID: sessionID, at: timestamp)
+            recordActivity(provider: provider, sessionID: state.sessionID, at: timestamp)
         }
     }
 
@@ -190,10 +246,11 @@ actor UsageCollector {
     private func makeSnapshot(now: Date) -> UsageSnapshot {
         var snapshot = UsageSnapshot(generatedAt: now)
 
-        for provider in UsageProvider.allCases {
-            if let root = roots[provider], !fileManager.fileExists(atPath: root.path) {
-                snapshot.sourceWarnings.append("\(provider.rawValue) data folder was not found")
-            }
+        let hasJSONLRoot = jsonlRoots.values
+            .flatMap { $0 }
+            .contains { fileManager.fileExists(atPath: $0.path) }
+        if !hasJSONLRoot && !fileManager.fileExists(atPath: openCodeDataRoot.path) {
+            snapshot.sourceWarnings.append("No supported local AI usage folders were found")
         }
 
         for state in states.values {
@@ -213,17 +270,37 @@ actor UsageCollector {
             }
         }
 
-        let activeCutoff = now.addingTimeInterval(-5 * 60)
-        for (key, activity) in sessionActivity where activity >= activeCutoff {
-            if key.hasPrefix("\(UsageProvider.codex.rawValue):") {
-                snapshot.activeSessionsByProvider[.codex, default: 0] += 1
-            } else if key.hasPrefix("\(UsageProvider.claude.rawValue):") {
-                snapshot.activeSessionsByProvider[.claude, default: 0] += 1
+        for result in openCodeResults.values {
+            merge(result.daily, into: &snapshot.daily)
+            merge(result.hourly, into: &snapshot.hourly)
+            for (sessionID, timestamp) in result.sessionActivity {
+                recordActivity(provider: .openCode, sessionID: sessionID, at: timestamp)
             }
         }
 
-        snapshot.indexedFileCount = states.count
+        let activeCutoff = now.addingTimeInterval(-5 * 60)
+        for (key, activity) in sessionActivity where activity >= activeCutoff {
+            for provider in UsageProvider.allCases where key.hasPrefix("\(provider.rawValue):") {
+                snapshot.activeSessionsByProvider[provider, default: 0] += 1
+                break
+            }
+        }
+
+        snapshot.indexedFileCount = states.count + openCodeResults.count
         return snapshot
+    }
+
+    private func merge(
+        _ source: [Date: UsageTimeBucket],
+        into destination: inout [Date: UsageTimeBucket]
+    ) {
+        for (date, bucket) in source {
+            var combined = destination[date] ?? UsageTimeBucket(start: date)
+            for (dimension, counts) in bucket.dimensions {
+                combined.add(counts, dimension: dimension)
+            }
+            destination[date] = combined
+        }
     }
 }
 

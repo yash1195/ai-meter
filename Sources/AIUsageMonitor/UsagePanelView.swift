@@ -189,7 +189,7 @@ struct UsagePanelView: View {
                     Text(filter.rawValue).tag(filter)
                 }
             }
-            .frame(width: 120)
+            .frame(width: 130)
         }
         .controlSize(.small)
     }
@@ -198,8 +198,9 @@ struct UsagePanelView: View {
         VStack(alignment: .leading, spacing: 9) {
             Text("Providers")
                 .font(.headline)
-            providerRow(.codex, color: .accentColor)
-            providerRow(.claude, color: .orange)
+            ForEach(UsageProvider.allCases) { provider in
+                providerRow(provider, color: provider.chartColor)
+            }
         }
     }
 
@@ -274,7 +275,7 @@ struct UsagePanelView: View {
                 ForEach(Array(model.report.models.prefix(6))) { row in
                     HStack {
                         Circle()
-                            .fill(row.dimension.provider == .codex ? Color.accentColor : .orange)
+                            .fill(row.dimension.provider.chartColor)
                             .frame(width: 7, height: 7)
                         Text(row.dimension.model)
                             .lineLimit(1)
@@ -387,7 +388,7 @@ struct UsagePanelView: View {
                 Label(warning, systemImage: "exclamationmark.triangle")
                     .lineLimit(1)
             } else {
-                Text("\(model.snapshot.indexedFileCount) local files · updated \(model.snapshot.generatedAt, style: .relative) ago")
+                Text("\(model.snapshot.indexedFileCount) local sources · updated \(model.snapshot.generatedAt, style: .relative) ago")
             }
             Spacer()
             updateControl
@@ -528,52 +529,29 @@ private struct InteractiveUsageChart: View {
             }
 
             Chart {
-                ForEach(report.bins) { bin in
-                    if report.filter.includes(.codex) {
+                ForEach(visibleProviders) { provider in
+                    ForEach(report.bins) { bin in
                         AreaMark(
                             x: .value("Time", bin.start, unit: report.calendarComponent),
                             yStart: .value("Baseline", 0),
-                            yEnd: .value(metric.rawValue, value(for: bin.codex))
+                            yEnd: .value(metric.rawValue, value(for: bin.counts(for: provider)))
                         )
                         .interpolationMethod(.catmullRom)
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color.accentColor.opacity(0.26), Color.accentColor.opacity(0.015)],
+                                colors: [provider.chartColor.opacity(0.24), provider.chartColor.opacity(0.012)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
                         LineMark(
                             x: .value("Time", bin.start, unit: report.calendarComponent),
-                            y: .value(metric.rawValue, value(for: bin.codex)),
-                            series: .value("Provider series", UsageProvider.codex.rawValue)
+                            y: .value(metric.rawValue, value(for: bin.counts(for: provider))),
+                            series: .value("Provider series", provider.rawValue)
                         )
                         .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                        .foregroundStyle(by: .value("Provider", UsageProvider.codex.rawValue))
-                    }
-                    if report.filter.includes(.claude) {
-                        AreaMark(
-                            x: .value("Time", bin.start, unit: report.calendarComponent),
-                            yStart: .value("Baseline", 0),
-                            yEnd: .value(metric.rawValue, value(for: bin.claude))
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color.orange.opacity(0.23), Color.orange.opacity(0.012)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        LineMark(
-                            x: .value("Time", bin.start, unit: report.calendarComponent),
-                            y: .value(metric.rawValue, value(for: bin.claude)),
-                            series: .value("Provider series", UsageProvider.claude.rawValue)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                        .foregroundStyle(by: .value("Provider", UsageProvider.claude.rawValue))
+                        .foregroundStyle(by: .value("Provider", provider.rawValue))
                     }
                 }
                 if let selectedDate {
@@ -581,29 +559,21 @@ private struct InteractiveUsageChart: View {
                         .foregroundStyle(.secondary)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
                     if let selectedBin {
-                        if report.filter.includes(.codex) {
+                        ForEach(visibleProviders) { provider in
                             PointMark(
                                 x: .value("Selection", selectedDate),
-                                y: .value(metric.rawValue, value(for: selectedBin.codex))
+                                y: .value(metric.rawValue, value(for: selectedBin.counts(for: provider)))
                             )
                             .symbolSize(54)
-                            .foregroundStyle(Color.accentColor)
-                        }
-                        if report.filter.includes(.claude) {
-                            PointMark(
-                                x: .value("Selection", selectedDate),
-                                y: .value(metric.rawValue, value(for: selectedBin.claude))
-                            )
-                            .symbolSize(54)
-                            .foregroundStyle(Color.orange)
+                            .foregroundStyle(provider.chartColor)
                         }
                     }
                 }
             }
-            .chartForegroundStyleScale([
-                UsageProvider.codex.rawValue: Color.accentColor,
-                UsageProvider.claude.rawValue: Color.orange
-            ])
+            .chartForegroundStyleScale(
+                domain: UsageProvider.allCases.map(\.rawValue),
+                range: UsageProvider.allCases.map(\.chartColor)
+            )
             .chartLegend(position: .bottom, alignment: .leading, spacing: 12)
             .chartYAxis {
                 AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
@@ -655,6 +625,10 @@ private struct InteractiveUsageChart: View {
         return report.bins.first(where: { $0.start == selectedDate })
     }
 
+    private var visibleProviders: [UsageProvider] {
+        UsageProvider.allCases.filter(report.filter.includes)
+    }
+
     private func value(for counts: UsageCounts) -> Double {
         switch metric {
         case .tokens: Double(counts.totalTokens)
@@ -685,6 +659,17 @@ private struct InteractiveUsageChart: View {
         case .hour: date.formatted(date: .omitted, time: .shortened)
         case .day: date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
         default: date.formatted(.dateTime.month(.abbreviated).year())
+        }
+    }
+}
+
+private extension UsageProvider {
+    var chartColor: Color {
+        switch self {
+        case .codex: .accentColor
+        case .claude: .orange
+        case .openCode: Color(red: 0.72, green: 0.96, blue: 0.34)
+        case .geminiCLI: .purple
         }
     }
 }

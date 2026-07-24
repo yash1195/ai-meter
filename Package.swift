@@ -13,12 +13,18 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "AIUsageMonitor",
-            path: "Sources/AIUsageMonitor"
+            path: "Sources/AIUsageMonitor",
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         ),
         .testTarget(
             name: "AIUsageMonitorTests",
             dependencies: ["AIUsageMonitor"],
-            path: "Tests/AIUsageMonitorTests"
+            path: "Tests/AIUsageMonitorTests",
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         )
     ]
 )
