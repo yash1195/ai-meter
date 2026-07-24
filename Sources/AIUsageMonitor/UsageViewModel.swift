@@ -16,6 +16,7 @@ final class UsageViewModel: ObservableObject {
     @Published var waterLitersPerKWh: Double {
         didSet { UserDefaults.standard.set(waterLitersPerKWh, forKey: Self.waterKey) }
     }
+    @Published private(set) var isLoadingInitialSnapshot = true
     @Published private(set) var liveActivityLevel = 0.0
     @Published private(set) var screenshotConfirmation: String?
 
@@ -23,11 +24,17 @@ final class UsageViewModel: ObservableObject {
     private static let pueKey = "methodologyV2.powerUsageEffectiveness"
     private static let waterKey = "methodologyV2.waterLitersPerKWh"
     private let collector: UsageCollector
+    private let cacheWriter: UsageSnapshotCacheWriter
     private var liveUsageActivity = LiveUsageActivity()
     private var refreshTask: Task<Void, Never>?
+    private var lastCachedSnapshot: UsageSnapshot?
 
-    init(collector: UsageCollector = UsageCollector()) {
+    init(
+        collector: UsageCollector = UsageCollector(),
+        snapshotCache: UsageSnapshotCache = .standard
+    ) {
         self.collector = collector
+        self.cacheWriter = UsageSnapshotCacheWriter(cache: snapshotCache)
         let defaults = UserDefaults.standard
         self.electricityKWhPerMillionTokens = defaults.object(forKey: Self.energyKey) == nil
             ? ResourceAssumptions.defaultElectricityKWhPerMillionTokens
@@ -38,6 +45,12 @@ final class UsageViewModel: ObservableObject {
         self.waterLitersPerKWh = defaults.object(forKey: Self.waterKey) == nil
             ? ResourceAssumptions.defaultOperationalWaterLitersPerITKWh
             : defaults.double(forKey: Self.waterKey)
+
+        if let cachedSnapshot = snapshotCache.load() {
+            snapshot = cachedSnapshot.restoringForStartup
+            lastCachedSnapshot = cachedSnapshot
+            isLoadingInitialSnapshot = false
+        }
     }
 
     var assumptions: ResourceAssumptions {
@@ -106,7 +119,23 @@ final class UsageViewModel: ObservableObject {
             totalTokens: snapshot.totalTokens,
             at: snapshot.generatedAt
         )
+        isLoadingInitialSnapshot = false
         self.snapshot = snapshot
+        persistIfNeeded(snapshot)
+    }
+
+    private func persistIfNeeded(_ snapshot: UsageSnapshot) {
+        let refreshInterval: TimeInterval = 30
+        if let lastCachedSnapshot,
+           snapshot.hasSameCachedContent(as: lastCachedSnapshot),
+           snapshot.generatedAt.timeIntervalSince(lastCachedSnapshot.generatedAt) < refreshInterval {
+            return
+        }
+
+        lastCachedSnapshot = snapshot
+        Task { [cacheWriter] in
+            await cacheWriter.save(snapshot)
+        }
     }
 
     deinit {

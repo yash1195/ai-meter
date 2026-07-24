@@ -142,30 +142,33 @@ struct UsagePanelView: View {
         let total = model.report.total.totalTokens
         let energy = model.assumptions.electricity(for: total)
         let water = model.assumptions.water(for: total)
+        let isLoading = model.isLoadingInitialSnapshot
         return HStack(spacing: 10) {
             SummaryMetric(
                 label: "TOKENS",
-                value: UsageFormatting.abbreviated(total),
-                detail: "provider reported",
-                comparison: "Counted across your local AI coding sessions",
+                value: isLoading ? "—" : UsageFormatting.abbreviated(total),
+                detail: isLoading ? "loading" : "provider reported",
+                comparison: isLoading
+                    ? "Indexing your local AI coding sessions"
+                    : "Counted across your local AI coding sessions",
                 systemImage: "number",
                 tint: .accentColor,
                 prominent: true
             )
             SummaryMetric(
                 label: "ELECTRICITY",
-                value: UsageFormatting.electricity(energy),
-                detail: "estimated",
-                comparison: ImpactEquivalence.electricity(energy),
+                value: isLoading ? "—" : UsageFormatting.electricity(energy),
+                detail: isLoading ? "loading" : "estimated",
+                comparison: isLoading ? "Waiting for local usage" : ImpactEquivalence.electricity(energy),
                 systemImage: "bolt.fill",
                 tint: .yellow,
                 prominent: false
             )
             SummaryMetric(
                 label: "WATER",
-                value: UsageFormatting.water(water),
-                detail: "estimated",
-                comparison: ImpactEquivalence.water(water),
+                value: isLoading ? "—" : UsageFormatting.water(water),
+                detail: isLoading ? "loading" : "estimated",
+                comparison: isLoading ? "Waiting for local usage" : ImpactEquivalence.water(water),
                 systemImage: "drop.fill",
                 tint: .cyan,
                 prominent: false
@@ -396,7 +399,13 @@ struct UsagePanelView: View {
 
     private var footer: some View {
         HStack {
-            if let warning = model.snapshot.sourceWarnings.first {
+            if model.isLoadingInitialSnapshot {
+                HStack(spacing: 5) {
+                    ProgressView()
+                        .controlSize(.mini)
+                    Text("Indexing local usage")
+                }
+            } else if let warning = model.snapshot.sourceWarnings.first {
                 Label(warning, systemImage: "exclamationmark.triangle")
                     .lineLimit(1)
             } else {

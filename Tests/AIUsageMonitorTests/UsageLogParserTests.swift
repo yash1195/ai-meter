@@ -356,6 +356,72 @@ final class UsageLogParserTests: XCTestCase {
     }
 
     @MainActor
+    func testSnapshotCacheHydratesStartupMetricsWithoutStaleLiveSessions() throws {
+        let fileManager = FileManager.default
+        let directory = fileManager.temporaryDirectory
+            .appendingPathComponent("AIUsageMonitor-Cache-\(UUID().uuidString)", isDirectory: true)
+        defer { try? fileManager.removeItem(at: directory) }
+
+        let cache = UsageSnapshotCache(
+            fileURL: directory.appendingPathComponent("usage-snapshot.json")
+        )
+        let now = Date()
+        let day = Calendar.current.startOfDay(for: now)
+        let dimension = UsageDimension(provider: .codex, model: "gpt-test")
+        var bucket = UsageTimeBucket(start: day)
+        bucket.add(
+            UsageCounts(uncachedInputTokens: 1_000, outputTokens: 250),
+            dimension: dimension
+        )
+        let cached = UsageSnapshot(
+            generatedAt: now,
+            daily: [day: bucket],
+            hourly: [day: bucket],
+            activeSessionsByProvider: [.codex: 3],
+            indexedFileCount: 42
+        )
+        try cache.save(cached)
+
+        let emptyHome = directory.appendingPathComponent("home", isDirectory: true)
+        let model = UsageViewModel(
+            collector: UsageCollector(homeDirectory: emptyHome),
+            snapshotCache: cache
+        )
+
+        XCTAssertEqual(model.todayTokens, 1_250)
+        XCTAssertEqual(model.snapshot.indexedFileCount, 42)
+        XCTAssertEqual(model.snapshot.activeSessions, 0)
+        XCTAssertEqual(model.liveActivityLevel, 0)
+        XCTAssertFalse(model.isLoadingInitialSnapshot)
+    }
+
+    @MainActor
+    func testMissingSnapshotCacheUsesLoadingStateInsteadOfZeroState() {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("AIUsageMonitor-MissingCache-\(UUID().uuidString)", isDirectory: true)
+        let model = UsageViewModel(
+            collector: UsageCollector(homeDirectory: directory),
+            snapshotCache: UsageSnapshotCache(
+                fileURL: directory.appendingPathComponent("missing.json")
+            )
+        )
+
+        XCTAssertTrue(model.isLoadingInitialSnapshot)
+    }
+
+    func testSnapshotCacheRejectsCorruptData() throws {
+        let fileManager = FileManager.default
+        let directory = fileManager.temporaryDirectory
+            .appendingPathComponent("AIUsageMonitor-CorruptCache-\(UUID().uuidString)", isDirectory: true)
+        defer { try? fileManager.removeItem(at: directory) }
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        let fileURL = directory.appendingPathComponent("usage-snapshot.json")
+        try Data("not-json".utf8).write(to: fileURL)
+
+        XCTAssertNil(UsageSnapshotCache(fileURL: fileURL).load())
+    }
+
+    @MainActor
     func testWidgetScreenshotRendersViewPixelsAsPNG() throws {
         let view = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 180))
         view.wantsLayer = true

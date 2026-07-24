@@ -1,6 +1,6 @@
 import Foundation
 
-enum UsageProvider: String, CaseIterable, Hashable, Sendable, Identifiable {
+enum UsageProvider: String, CaseIterable, Codable, Hashable, Sendable, Identifiable {
     case codex = "Codex"
     case claude = "Claude Code"
     case openCode = "OpenCode"
@@ -60,7 +60,7 @@ enum UsageMetric: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-struct UsageCounts: Equatable, Sendable {
+struct UsageCounts: Codable, Equatable, Sendable {
     var uncachedInputTokens = 0
     var cachedInputTokens = 0
     var cacheWriteTokens = 0
@@ -120,12 +120,12 @@ struct UsageCounts: Equatable, Sendable {
     }
 }
 
-struct UsageDimension: Hashable, Sendable {
+struct UsageDimension: Codable, Hashable, Sendable {
     let provider: UsageProvider
     let model: String
 }
 
-struct UsageTimeBucket: Equatable, Sendable {
+struct UsageTimeBucket: Codable, Equatable, Sendable {
     let start: Date
     var dimensions: [UsageDimension: UsageCounts] = [:]
 
@@ -138,7 +138,7 @@ struct UsageTimeBucket: Equatable, Sendable {
     }
 }
 
-struct UsageSnapshot: Equatable, Sendable {
+struct UsageSnapshot: Codable, Equatable, Sendable {
     var generatedAt = Date()
     var daily: [Date: UsageTimeBucket] = [:]
     var hourly: [Date: UsageTimeBucket] = [:]
@@ -158,6 +158,19 @@ struct UsageSnapshot: Equatable, Sendable {
 
     var earliestDate: Date? {
         daily.keys.min()
+    }
+
+    var restoringForStartup: UsageSnapshot {
+        var restored = self
+        restored.activeSessionsByProvider = [:]
+        return restored
+    }
+
+    func hasSameCachedContent(as other: UsageSnapshot) -> Bool {
+        daily == other.daily
+            && hourly == other.hourly
+            && sourceWarnings == other.sourceWarnings
+            && indexedFileCount == other.indexedFileCount
     }
 }
 

@@ -24,8 +24,13 @@ not store a durable timestamp or model name alongside every local token count,
 so AI Meter estimates chart placement from conversation timing while preserving
 the exact locally recorded total.
 
-Usage history is rebuilt from the local provider files. AI Meter stores only
-interface preferences and environmental-estimation assumptions in
+AI Meter keeps a derived aggregate snapshot at
+`~/Library/Caches/com.zeko.aimeter/usage-snapshot-v1.json` so subsequent
+launches can display metrics immediately while the provider files refresh.
+The cache contains timestamps, coding-harness and model names, token-count
+aggregates, and local source counts. It does not contain prompt text, response
+text, source code, tool output, credentials, or session identifiers. Interface
+preferences and environmental-estimation assumptions are stored in
 `UserDefaults`.
 
 ## Network access

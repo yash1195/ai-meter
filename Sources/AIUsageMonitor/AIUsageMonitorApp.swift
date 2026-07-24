@@ -36,7 +36,11 @@ private struct MenuBarLabelView: View {
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "chart.line.uptrend.xyaxis")
-            Text(UsageFormatting.abbreviated(model.todayTokens))
+            Text(
+                model.isLoadingInitialSnapshot
+                    ? "…"
+                    : UsageFormatting.abbreviated(model.todayTokens)
+            )
                 .monospacedDigit()
         }
     }

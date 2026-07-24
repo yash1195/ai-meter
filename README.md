@@ -33,6 +33,7 @@ data boundary and update-check network behavior.
 - Familiar home-electricity and WaterSense-shower equivalents beside impact totals.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
 - Live header activity meter driven by recent local token throughput.
+- Immediate startup from a derived on-device usage cache while sources refresh.
 - Secure in-app update checks and installation.
 - Copy an exact PNG screenshot of the visible widget using the Screenshot button.
 
