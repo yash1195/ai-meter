@@ -290,7 +290,7 @@ final class UsageLogParserTests: XCTestCase {
         )
         XCTAssertEqual(
             ImpactEquivalence.water(ImpactEquivalence.waterSenseShowerLitersPerMinute * 15),
-            "About 1.0 fifteen-minute WaterSense shower"
+            "About 1.0 fifteen-minute shower"
         )
         XCTAssertTrue(ImpactEquivalence.electricity(0.1).contains("min"))
         XCTAssertTrue(ImpactEquivalence.water(7.6).contains("min"))

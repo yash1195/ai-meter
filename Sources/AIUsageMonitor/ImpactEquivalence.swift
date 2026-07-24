@@ -24,13 +24,13 @@ enum ImpactEquivalence {
     static func water(_ liters: Double) -> String {
         let showerMinutes = max(0, liters) / waterSenseShowerLitersPerMinute
         if showerMinutes < 1 {
-            return "About \(quantity(showerMinutes * 60, singular: "second", plural: "seconds")) of a WaterSense shower"
+            return "About \(quantity(showerMinutes * 60, singular: "second", plural: "seconds")) of a water-efficient shower"
         }
         if showerMinutes < 15 {
-            return "About \(quantity(showerMinutes, singular: "minute", plural: "minutes")) of a WaterSense shower"
+            return "About \(quantity(showerMinutes, singular: "minute", plural: "minutes")) of a water-efficient shower"
         }
         let showers = showerMinutes / 15
-        return "About \(quantity(showers, singular: "fifteen-minute WaterSense shower", plural: "fifteen-minute WaterSense showers"))"
+        return "About \(quantity(showers, singular: "fifteen-minute shower", plural: "fifteen-minute showers"))"
     }
 
     private static func number(_ value: Double) -> String {
