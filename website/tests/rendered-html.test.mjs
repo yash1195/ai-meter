@@ -15,6 +15,9 @@ test("exports a static AI Meter landing page", async () => {
   assert.match(html, /AI-Meter\.dmg/);
   assert.match(html, /rel="icon"/);
   assert.match(html, /rel="apple-touch-icon"/);
+  assert.match(html, /property="og:image"/);
+  assert.match(html, /og-image\.png/);
+  assert.match(html, /name="twitter:card" content="summary_large_image"/);
   assert.match(html, /Direct download/);
   assert.match(html, /View on GitHub/);
   assert.match(html, /ai-meter-app\.png/);

@@ -4,9 +4,33 @@ import { HashNavigation } from "./HashNavigation";
 import { InstallCommand } from "./InstallCommand";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ai-meter.app"),
   title: "AI Meter — Local AI usage for your Mac",
   description:
     "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+  openGraph: {
+    title: "AI Meter — Measure your AI locally",
+    description:
+      "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+    url: "https://ai-meter.app/",
+    siteName: "AI Meter",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AI Meter — local Codex and Claude Code usage for macOS",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Meter — Measure your AI locally",
+    description:
+      "See Codex and Claude Code token usage, electricity, and water estimates—entirely on your Mac.",
+    images: ["/og-image.png"],
+  },
 };
 
 const github = "https://github.com/yash1195/ai-meter";
