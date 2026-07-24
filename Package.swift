@@ -10,12 +10,25 @@ let package = Package(
     products: [
         .executable(name: "AIUsageMonitor", targets: ["AIUsageMonitor"])
     ],
+    dependencies: [
+        .package(
+            url: "https://github.com/sparkle-project/Sparkle",
+            exact: "2.9.4"
+        )
+    ],
     targets: [
         .executableTarget(
             name: "AIUsageMonitor",
+            dependencies: [
+                .product(name: "Sparkle", package: "Sparkle")
+            ],
             path: "Sources/AIUsageMonitor",
             linkerSettings: [
-                .linkedLibrary("sqlite3")
+                .linkedLibrary("sqlite3"),
+                .unsafeFlags([
+                    "-Xlinker", "-rpath",
+                    "-Xlinker", "@executable_path/../Frameworks"
+                ])
             ]
         ),
         .testTarget(

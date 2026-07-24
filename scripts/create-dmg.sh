@@ -80,6 +80,42 @@ end tell
 APPLESCRIPT
 
 if [[ -n "$SIGNING_IDENTITY" ]]; then
+  SPARKLE_FRAMEWORK="$MOUNT_DIR/AI Meter.app/Contents/Frameworks/Sparkle.framework"
+
+  if [[ -d "$SPARKLE_FRAMEWORK" ]]; then
+    codesign \
+      --force \
+      --options runtime \
+      --timestamp \
+      --sign "$SIGNING_IDENTITY" \
+      "$SPARKLE_FRAMEWORK/Versions/B/XPCServices/Installer.xpc"
+    codesign \
+      --force \
+      --options runtime \
+      --timestamp \
+      --preserve-metadata=entitlements \
+      --sign "$SIGNING_IDENTITY" \
+      "$SPARKLE_FRAMEWORK/Versions/B/XPCServices/Downloader.xpc"
+    codesign \
+      --force \
+      --options runtime \
+      --timestamp \
+      --sign "$SIGNING_IDENTITY" \
+      "$SPARKLE_FRAMEWORK/Versions/B/Autoupdate"
+    codesign \
+      --force \
+      --options runtime \
+      --timestamp \
+      --sign "$SIGNING_IDENTITY" \
+      "$SPARKLE_FRAMEWORK/Versions/B/Updater.app"
+    codesign \
+      --force \
+      --options runtime \
+      --timestamp \
+      --sign "$SIGNING_IDENTITY" \
+      "$SPARKLE_FRAMEWORK"
+  fi
+
   codesign \
     --force \
     --options runtime \

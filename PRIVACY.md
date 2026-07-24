@@ -34,9 +34,10 @@ AI Meter makes an HTTPS request to its public update manifest to check whether
 a newer version is available. Local AI usage data and source records are not
 included in that request and are not transmitted by AI Meter.
 
-The update host keeps access logging disabled. AI Meter may use CloudFront's
-aggregate request count to estimate update-check activity, but does not store
-IP addresses, user agents, device identifiers, or per-user analytics.
+AI Meter does not attach analytics events, advertising identifiers, device
+identifiers, or per-user usage data to update requests. As with any HTTPS
+request, the hosting infrastructure necessarily receives routine network
+metadata needed to return a response.
 
 ## Screenshots
 

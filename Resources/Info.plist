@@ -17,9 +17,9 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.2.0</string>
+    <string>0.2.1</string>
     <key>CFBundleVersion</key>
-    <string>6</string>
+    <string>7</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon.icns</string>
     <key>LSMinimumSystemVersion</key>
@@ -30,6 +30,14 @@
     <true/>
     <key>AIUpdateManifestURL</key>
     <string>https://updates.ai-meter.app/latest.json</string>
+    <key>SUFeedURL</key>
+    <string>https://updates.ai-meter.app/appcast.xml</string>
+    <key>SUEnableAutomaticChecks</key>
+    <false/>
+    <key>SUAutomaticallyUpdate</key>
+    <false/>
+    <key>SUPublicEDKey</key>
+    <string>oNHDr6Mz8K/VY+VbId2Am/O+ppJ/zcNxi8h9pwK9Eso=</string>
     <key>AIReleasePageURL</key>
     <string>https://github.com/yash1195/ai-meter/releases/latest</string>
 </dict>

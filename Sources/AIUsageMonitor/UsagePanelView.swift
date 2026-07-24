@@ -429,7 +429,7 @@ struct UsagePanelView: View {
         case .current:
             Button("Up to date", action: updateChecker.checkNow)
         case .available:
-            Button("Update to latest", action: updateChecker.openAvailableUpdate)
+            Button("Install update", action: updateChecker.openAvailableUpdate)
                 .foregroundStyle(Color.accentColor)
         case .failed:
             Button("Retry update", action: updateChecker.checkNow)

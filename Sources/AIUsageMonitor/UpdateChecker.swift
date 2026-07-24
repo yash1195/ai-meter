@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import Sparkle
 
 struct UpdateManifest: Codable, Equatable, Sendable {
     let version: String
@@ -22,22 +23,34 @@ final class UpdateChecker: ObservableObject {
     private let manifestURL: URL?
     private let session: URLSession
     private let currentBuild: Int
+    private let updaterController: SPUStandardUpdaterController
     private var refreshTask: Task<Void, Never>?
 
     init() {
         self.manifestURL = Self.configuredManifestURL
         self.session = .shared
         self.currentBuild = Self.bundleBuild
+        self.updaterController = SPUStandardUpdaterController(
+            startingUpdater: true,
+            updaterDelegate: nil,
+            userDriverDelegate: nil
+        )
     }
 
     init(
         manifestURL: URL?,
         session: URLSession = .shared,
-        currentBuild: Int
+        currentBuild: Int,
+        startsUpdater: Bool = false
     ) {
         self.manifestURL = manifestURL
         self.session = session
         self.currentBuild = currentBuild
+        self.updaterController = SPUStandardUpdaterController(
+            startingUpdater: startsUpdater,
+            updaterDelegate: nil,
+            userDriverDelegate: nil
+        )
     }
 
     func start() {
@@ -59,8 +72,8 @@ final class UpdateChecker: ObservableObject {
     }
 
     func openAvailableUpdate() {
-        guard case let .available(manifest) = status else { return }
-        NSWorkspace.shared.open(manifest.releaseURL)
+        guard case .available = status else { return }
+        updaterController.checkForUpdates(nil)
     }
 
     nonisolated static func isNewer(build: Int, than currentBuild: Int) -> Bool {

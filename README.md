@@ -32,7 +32,7 @@ data boundary and update-check network behavior.
 - Token, estimated electricity, and estimated water chart modes.
 - Familiar home-electricity and WaterSense-shower equivalents beside impact totals.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
-- Automatic update availability checks with an in-widget update link.
+- Secure in-app update checks and installation.
 - Copy an exact PNG screenshot of the visible widget using the Screenshot button.
 
 ## Run during development
@@ -59,16 +59,13 @@ running it.
 
 ## Website
 
-The marketing site lives in `website/` and exports as plain static files for
-GitHub Pages, S3, or any other static host:
+The marketing site source lives in `website/`. To build and test it locally:
 
 ```sh
 cd website
 npm install
 npm test
 ```
-
-The deployable output is written to `website/out/`.
 
 ## Test
 
@@ -137,25 +134,13 @@ and primary sources.
 
 ## Updates
 
-AI Meter checks an HTTPS JSON manifest every six hours and also provides a
-manual check. The configured production URL is:
+AI Meter periodically checks for updates without sending local usage data.
+Starting with AI Meter 0.2.1, the **Install update** button uses
+[Sparkle](https://sparkle-project.org/) to verify, install, and relaunch signed
+updates in place. No DMG dragging is required for subsequent updates.
 
-`https://updates.ai-meter.app/latest.json`
-
-The manifest format is:
-
-```json
-{
-  "version": "0.2.0",
-  "build": 6,
-  "releaseURL": "https://github.com/yash1195/ai-meter/releases/latest/download/AI-Meter.dmg"
-}
-```
-
-The monotonic `build` value is compared with `CFBundleVersion`. When a newer
-build exists, the widget presents an **Update to latest** button that opens the
-signed, notarized DMG download. AI Meter does not install updates
-automatically; macOS still asks the user to drag AI Meter into Applications.
+Sparkle is distributed under its permissive license. Its full license and
+third-party notices are bundled inside AI Meter.
 
 ## License
 
