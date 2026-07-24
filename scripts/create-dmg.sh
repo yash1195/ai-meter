@@ -9,6 +9,7 @@ WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-meter-dmg.XXXXXX")"
 MOUNT_DIR="/Volumes/$VOLUME_NAME"
 READ_WRITE_DMG="$WORK_DIR/AI-Meter-rw.dmg"
 BACKGROUND_IMAGE="$WORK_DIR/background.png"
+SIGNING_IDENTITY="${AI_METER_SIGNING_IDENTITY:-}"
 DEVICE=""
 
 cleanup() {
@@ -34,20 +35,20 @@ swift "$PROJECT_DIR/scripts/generate-dmg-background.swift" "$BACKGROUND_IMAGE"
 hdiutil create \
   -quiet \
   -size 48m \
-  -fs HFS+ \
+  -fs APFS \
   -volname "$VOLUME_NAME" \
   "$READ_WRITE_DMG"
 
-DEVICE="$(
-  hdiutil attach \
-    -readwrite \
-    -noverify \
-    -noautoopen \
-    "$READ_WRITE_DMG" |
-    awk '/Apple_HFS/ {print $1}'
-)"
+hdiutil attach \
+  -readwrite \
+  -noverify \
+  -noautoopen \
+  -mountpoint "$MOUNT_DIR" \
+  "$READ_WRITE_DMG" \
+  >/dev/null
+DEVICE="$MOUNT_DIR"
 
-ditto "$APP_PATH" "$MOUNT_DIR/AI Meter.app"
+cp -R "$APP_PATH" "$MOUNT_DIR/AI Meter.app"
 ln -s /Applications "$MOUNT_DIR/Applications"
 mkdir "$MOUNT_DIR/.background"
 cp "$BACKGROUND_IMAGE" "$MOUNT_DIR/.background/background.png"
@@ -77,6 +78,16 @@ tell application "Finder"
   end tell
 end tell
 APPLESCRIPT
+
+if [[ -n "$SIGNING_IDENTITY" ]]; then
+  codesign \
+    --force \
+    --options runtime \
+    --timestamp \
+    --sign "$SIGNING_IDENTITY" \
+    "$MOUNT_DIR/AI Meter.app"
+  codesign --verify --deep --strict --verbose=2 "$MOUNT_DIR/AI Meter.app"
+fi
 
 sync
 hdiutil detach "$DEVICE" -quiet

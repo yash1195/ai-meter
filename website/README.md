@@ -42,10 +42,11 @@ ensures GitHub serves Next.js `_next` assets.
 ## Installer
 
 The curl command shown on the page points to the repository-root `install.sh`.
-That script downloads the latest `AI-Meter.zip` GitHub release asset and verifies:
+That script downloads the latest `AI-Meter.dmg` GitHub release asset and verifies:
 
 - the bundle identifier is `com.zeko.aimeter`;
 - the app has a valid Apple code signature;
+- macOS Gatekeeper accepts the notarized app;
 - the Developer ID team is `L6AR4H8B39`.
 
 The release asset must be signed and notarized before publication.

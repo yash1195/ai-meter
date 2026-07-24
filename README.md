@@ -52,9 +52,10 @@ Alternatively, install from Terminal:
 curl -fsSL https://raw.githubusercontent.com/yash1195/ai-meter/main/install.sh | sh
 ```
 
-The installer downloads the latest `AI-Meter.zip`, verifies the bundle ID,
-Apple code signature, and Developer ID team, then installs AI Meter in
-`~/Applications`. You can inspect [install.sh](install.sh) before running it.
+The installer downloads the latest `AI-Meter.dmg`, verifies the bundle ID,
+Apple code signature, Gatekeeper approval, and Developer ID team, then installs
+AI Meter in `~/Applications`. You can inspect [install.sh](install.sh) before
+running it.
 
 ## Website
 
