@@ -7,7 +7,7 @@ struct AIUsageMonitorApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            UsagePanelView(toggleFloatingPanel: appDelegate.togglePanel)
+            UsagePanelView()
                 .environmentObject(appDelegate.model)
                 .environmentObject(appDelegate.updateChecker)
         } label: {
@@ -22,20 +22,11 @@ struct AIUsageMonitorApp: App {
 final class AppLifecycleDelegate: NSObject, NSApplicationDelegate {
     let model = UsageViewModel()
     let updateChecker = UpdateChecker()
-    private lazy var panelController = PanelController(model: model, updateChecker: updateChecker)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApplication.shared.setActivationPolicy(.accessory)
         model.start()
         updateChecker.start()
-    }
-
-    func togglePanel() {
-        panelController.toggle()
-    }
-
-    func resetPanelPosition() {
-        panelController.moveToCurrentScreen()
     }
 }
 

@@ -22,7 +22,6 @@ data boundary and update-check network behavior.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
 - Automatic update availability checks with an in-widget update link.
 - Copy an exact PNG screenshot of the visible widget using the Screenshot button.
-- Optionally pin the dashboard as a floating panel.
 
 ## Run during development
 

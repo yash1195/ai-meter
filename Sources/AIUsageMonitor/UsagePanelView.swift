@@ -5,7 +5,6 @@ struct UsagePanelView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var model: UsageViewModel
     @EnvironmentObject private var updateChecker: UpdateChecker
-    let toggleFloatingPanel: (() -> Void)?
 
     private let brandAccent = Color(red: 0.72, green: 0.96, blue: 0.34)
 
@@ -106,14 +105,6 @@ struct UsagePanelView: View {
                         Text("COPIED")
                             .font(.system(size: 8, weight: .semibold, design: .monospaced))
                             .foregroundStyle(brandAccent)
-                    }
-
-                    if let toggleFloatingPanel {
-                        HeaderActionButton(
-                            systemImage: "pin",
-                            help: "Open pinned floating window",
-                            action: toggleFloatingPanel
-                        )
                     }
 
                     HeaderActionButton(
