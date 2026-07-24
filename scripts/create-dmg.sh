@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_DIR="${0:A:h:h}"
 APP_PATH="${1:-$PROJECT_DIR/dist/AI Meter.app}"
 OUTPUT_PATH="${2:-$PROJECT_DIR/dist/AI-Meter.dmg}"
-VOLUME_NAME="AI Meter Installer"
+VOLUME_NAME="${3:-AI Meter Installer}"
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-meter-dmg.XXXXXX")"
 MOUNT_DIR="/Volumes/$VOLUME_NAME"
 READ_WRITE_DMG="$WORK_DIR/AI-Meter-rw.dmg"
@@ -67,8 +67,8 @@ tell application "Finder"
     set icon size of theViewOptions to 128
     set text size of theViewOptions to 13
     set background picture of theViewOptions to file ".background:background.png"
-    set position of item "AI Meter.app" of container window to {180, 220}
-    set position of item "Applications" of container window to {460, 220}
+    set position of item "AI Meter.app" of container window to {176, 220}
+    set position of item "Applications" of container window to {464, 220}
     close
     open
     update without registering applications
