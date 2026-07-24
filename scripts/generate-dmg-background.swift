@@ -61,6 +61,16 @@ titleStyle.alignment = .center
     ]
 )
 
+for cardX in [76.0, 364.0] {
+    let cardRect = NSRect(x: cardX, y: 86, width: 200, height: 194)
+    let card = NSBezierPath(roundedRect: cardRect, xRadius: 24, yRadius: 24)
+    NSColor(calibratedWhite: 0.94, alpha: 0.96).setFill()
+    card.fill()
+    NSColor(calibratedWhite: 1, alpha: 0.22).setStroke()
+    card.lineWidth = 2
+    card.stroke()
+}
+
 let arrow = NSBezierPath()
 arrow.move(to: NSPoint(x: 268, y: 196))
 arrow.line(to: NSPoint(x: 372, y: 196))

@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_DIR="${0:A:h:h}"
 APP_PATH="${1:-$PROJECT_DIR/dist/AI Meter.app}"
 OUTPUT_PATH="${2:-$PROJECT_DIR/dist/AI-Meter.dmg}"
-VOLUME_NAME="AI Meter"
+VOLUME_NAME="AI Meter Installer"
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-meter-dmg.XXXXXX")"
 MOUNT_DIR="/Volumes/$VOLUME_NAME"
 READ_WRITE_DMG="$WORK_DIR/AI-Meter-rw.dmg"
