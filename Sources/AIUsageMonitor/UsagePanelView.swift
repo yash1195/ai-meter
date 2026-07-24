@@ -467,25 +467,28 @@ private struct SummaryMetric: View {
     let prominent: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 6) {
                 Image(systemName: systemImage)
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(tint)
                 Text(label)
-                    .font(.caption2.weight(.semibold))
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(.secondary)
             }
             Text(value)
-                .font(prominent ? .title2.weight(.semibold) : .headline)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .tracking(-0.7)
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.68)
             Text(detail)
-                .font(.caption2)
+                .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.tertiary)
         }
-        .padding(12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 13)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             RoundedRectangle(cornerRadius: 13)
