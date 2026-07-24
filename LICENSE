@@ -1,0 +1,55 @@
+AI METER SOURCE-AVAILABLE LICENSE 1.0
+
+Copyright (c) 2026 Yash Choukse. All rights reserved.
+
+This license applies to the source code and other materials in this repository.
+It does not govern official binary releases distributed separately by the
+copyright holder, which may be accompanied by separate end-user terms.
+
+1. Permission to View
+
+You may access and view the source code in this repository solely to evaluate
+AI Meter, understand how it works, and review its security and privacy
+properties.
+
+2. No Permission to Use or Replicate
+
+Except with prior written permission from the copyright holder, you may not:
+
+- compile, run, or deploy the source code or any build produced from it;
+- copy, reproduce, modify, translate, or create derivative works from the
+  source code;
+- distribute, sublicense, sell, lease, host, or otherwise make the source code
+  or a build produced from it available to another person;
+- use the source code, its architecture, or substantial portions of it to
+  create or provide a competing or substantially similar product or service;
+- remove or alter copyright, trademark, or attribution notices.
+
+3. GitHub Platform Rights
+
+GitHub's Terms of Service may permit users to view and fork public repositories
+through GitHub's functionality. Any such platform permission does not grant a
+license to use, modify, distribute, deploy, commercialize, or create derivative
+works from AI Meter outside those mandatory platform rights.
+
+4. Separate Permission
+
+The copyright holder may grant additional rights under a separate written
+agreement. Permission for contributions, commercial use, redistribution, or
+derivative works must be obtained in writing.
+
+5. No Trademark License
+
+This license does not grant permission to use the AI Meter name, branding,
+logos, or other trademarks.
+
+6. Disclaimer
+
+THE SOURCE CODE AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT SHALL
+THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+WITH THE SOURCE CODE, SOFTWARE, OR THEIR USE.
+
+This is a source-available license, not an open-source license.
