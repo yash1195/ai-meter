@@ -100,7 +100,9 @@ signed, notarized release. AI Meter does not install updates automatically.
 
 ## License
 
-AI Meter is source-available, not open source. The public source may be viewed
-for evaluation and security review, but copying, modification, redistribution,
-deployment, and replication are not permitted without written permission. See
-[LICENSE](LICENSE).
+Official, unmodified AI Meter releases are free for individuals and companies
+to install and use, including for internal commercial business use. The public
+source is available for evaluation and security review, but source copying,
+modification, redistribution, deployment, and product replication are not
+permitted without written permission. This is source-available software, not
+open source. See [LICENSE](LICENSE).

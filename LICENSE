@@ -1,18 +1,29 @@
-AI METER SOURCE-AVAILABLE LICENSE 1.0
+AI METER FREE-USE SOURCE-AVAILABLE LICENSE 1.0
 
 Copyright (c) 2026 Yash Choukse. All rights reserved.
 
-This license applies to the source code and other materials in this repository.
-It does not govern official binary releases distributed separately by the
-copyright holder, which may be accompanied by separate end-user terms.
+1. Free Use of Official Releases
 
-1. Permission to View
+The copyright holder grants every individual and legal entity a worldwide,
+royalty-free, non-exclusive license to download, install, and use unmodified
+official binary releases of AI Meter for any lawful purpose, including
+personal, educational, internal business, and commercial business use.
+
+You may install official releases on any number of devices that you own or
+control. An organization may make reasonable internal copies solely to deploy
+official releases to its employees and contractors for that organization's
+use.
+
+An "official release" is an unmodified binary release distributed by the
+copyright holder through an official AI Meter distribution channel.
+
+2. Permission to View Source
 
 You may access and view the source code in this repository solely to evaluate
 AI Meter, understand how it works, and review its security and privacy
 properties.
 
-2. No Permission to Use or Replicate
+3. No Permission to Use or Replicate Source
 
 Except with prior written permission from the copyright holder, you may not:
 
@@ -25,25 +36,29 @@ Except with prior written permission from the copyright holder, you may not:
   create or provide a competing or substantially similar product or service;
 - remove or alter copyright, trademark, or attribution notices.
 
-3. GitHub Platform Rights
+The permission to use official releases does not permit you to sell, rebrand,
+modify, externally redistribute, sublicense, host, or offer AI Meter or a
+substantially similar product or service to third parties.
+
+4. GitHub Platform Rights
 
 GitHub's Terms of Service may permit users to view and fork public repositories
 through GitHub's functionality. Any such platform permission does not grant a
 license to use, modify, distribute, deploy, commercialize, or create derivative
 works from AI Meter outside those mandatory platform rights.
 
-4. Separate Permission
+5. Separate Permission
 
 The copyright holder may grant additional rights under a separate written
-agreement. Permission for contributions, commercial use, redistribution, or
-derivative works must be obtained in writing.
+agreement. Permission for contributions, source-code use, external
+redistribution, sublicensing, or derivative works must be obtained in writing.
 
-5. No Trademark License
+6. No Trademark License
 
 This license does not grant permission to use the AI Meter name, branding,
 logos, or other trademarks.
 
-6. Disclaimer
+7. Disclaimer
 
 THE SOURCE CODE AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
@@ -52,4 +67,5 @@ THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
 WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
 WITH THE SOURCE CODE, SOFTWARE, OR THEIR USE.
 
-This is a source-available license, not an open-source license.
+Official AI Meter releases are free to use. The source code is source-available,
+not open source.
