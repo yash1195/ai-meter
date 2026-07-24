@@ -19,9 +19,13 @@ interface preferences and environmental-estimation assumptions in
 
 ## Network access
 
-AI Meter makes an HTTPS request to its public GitHub release manifest to check
-whether a newer version is available. Local AI usage data and source records
-are not included in that request and are not transmitted by AI Meter.
+AI Meter makes an HTTPS request to its public update manifest to check whether
+a newer version is available. Local AI usage data and source records are not
+included in that request and are not transmitted by AI Meter.
+
+The update host keeps access logging disabled. AI Meter may use CloudFront's
+aggregate request count to estimate update-check activity, but does not store
+IP addresses, user agents, device identifiers, or per-user analytics.
 
 ## Screenshots
 

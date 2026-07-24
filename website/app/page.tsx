@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { HashNavigation } from "./HashNavigation";
 import { InstallCommand } from "./InstallCommand";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ function Mark() {
 export default function Home() {
   return (
     <main className="page">
+      <HashNavigation />
       <nav className="nav shell" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="AI Meter home">
           <Mark />
@@ -51,8 +53,8 @@ export default function Home() {
 
           <p className="lede">
             AI Meter shows your Codex and Claude Code token usage, electricity,
-            and water estimates in the macOS menu bar. No accounts. No analytics.
-            No usage data leaves your Mac.
+            and water estimates in the macOS menu bar. No accounts. No AI
+            telemetry. No usage data leaves your Mac.
           </p>
 
           <div className="actions">
@@ -91,6 +93,63 @@ export default function Home() {
             />
           </div>
         </figure>
+      </section>
+
+      <section className="methodology shell" id="methodology">
+        <div className="method-heading">
+          <div>
+            <span className="method-kicker">TRANSPARENT ESTIMATION</span>
+            <h2>From tokens to estimated impact.</h2>
+          </div>
+          <p>
+            AI Meter follows a SCI for AI-aligned consumer boundary. These are
+            local scenarios based on published research—not measurements from
+            OpenAI, Anthropic, or their data centers.
+          </p>
+        </div>
+
+        <div className="method-flow">
+          <article>
+            <span className="method-step">01 / USAGE</span>
+            <strong className="method-symbol">#</strong>
+            <h3>Provider-reported tokens</h3>
+            <p>
+              Codex and Claude Code token counts are read from local provider
+              records, deduplicated, and combined on your Mac.
+            </p>
+          </article>
+
+          <article>
+            <span className="method-step">02 / ELECTRICITY</span>
+            <strong className="method-symbol">⚡</strong>
+            <h3>Tokens ÷ 1M × 0.39 kWh</h3>
+            <p>
+              The default inference factor is 0.39 facility kWh per million
+              tokens, with an indicative 0.20–0.75 kWh uncertainty range.
+            </p>
+          </article>
+
+          <article>
+            <span className="method-step">03 / WATER</span>
+            <strong className="method-symbol">◒</strong>
+            <h3>Energy ÷ PUE × WUE</h3>
+            <p>
+              Direct cooling water uses a 1.20 PUE and 0.45 L per IT kWh site
+              WUE. Both assumptions are adjustable inside AI Meter.
+            </p>
+          </article>
+        </div>
+
+        <div className="method-note">
+          <p>
+            <strong>What is excluded:</strong> model training, embodied hardware,
+            off-site electricity water, grid carbon, networking, and user-device
+            energy.
+          </p>
+          <a href={`${github}/blob/main/METHODOLOGY.md`}>
+            Read the full methodology <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       </section>
 
       <footer className="footer shell">

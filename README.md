@@ -104,7 +104,7 @@ and primary sources.
 AI Meter checks an HTTPS JSON manifest every six hours and also provides a
 manual check. The configured production URL is:
 
-`https://github.com/yash1195/ai-meter/releases/latest/download/latest.json`
+`https://updates.ai-meter.app/latest.json`
 
 The manifest format is:
 

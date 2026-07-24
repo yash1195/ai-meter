@@ -15,5 +15,9 @@ test("exports a static AI Meter landing page", async () => {
   assert.match(html, /Direct download/);
   assert.match(html, /View on GitHub/);
   assert.match(html, /ai-meter-app\.png/);
+  assert.match(html, /From tokens to estimated impact/);
+  assert.match(html, /0\.39 kWh/);
+  assert.match(html, /Energy ÷ PUE × WUE/);
+  assert.match(html, /METHODOLOGY\.md/);
   assert.doesNotMatch(html, /Your site is taking shape/);
 });

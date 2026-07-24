@@ -27,7 +27,7 @@
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>AIUpdateManifestURL</key>
-    <string>https://github.com/yash1195/ai-meter/releases/latest/download/latest.json</string>
+    <string>https://updates.ai-meter.app/latest.json</string>
     <key>AIReleasePageURL</key>
     <string>https://github.com/yash1195/ai-meter/releases/latest</string>
 </dict>
