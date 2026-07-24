@@ -85,8 +85,8 @@ export default function Home() {
             <Image
               src="/ai-meter-app.png"
               alt="AI Meter macOS widget showing local token usage, electricity, water, and an interactive usage chart"
-              width={1080}
-              height={1440}
+              width={1116}
+              height={1510}
               priority
             />
           </div>
