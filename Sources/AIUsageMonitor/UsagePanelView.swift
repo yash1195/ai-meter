@@ -152,7 +152,7 @@ struct UsagePanelView: View {
                 label: "TOKENS",
                 value: UsageFormatting.abbreviated(total),
                 detail: "provider reported",
-                comparison: nil,
+                comparison: "Counted across your local AI coding sessions",
                 systemImage: "number",
                 tint: .accentColor,
                 prominent: true
@@ -480,7 +480,7 @@ private struct SummaryMetric: View {
     let label: String
     let value: String
     let detail: String
-    let comparison: String?
+    let comparison: String
     let systemImage: String
     let tint: Color
     let prominent: Bool
@@ -505,19 +505,21 @@ private struct SummaryMetric: View {
             Text(detail)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.tertiary)
-            Group {
-                if let comparison {
-                    Text(comparison)
-                        .foregroundStyle(tint.opacity(0.9))
-                } else {
-                    Text(" ")
-                        .hidden()
-                        .accessibilityHidden(true)
-                }
+            HStack(alignment: .top, spacing: 5) {
+                Image(systemName: "equal")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(tint)
+                    .padding(.top, 2)
+                Text(comparison)
+                    .foregroundStyle(.primary.opacity(0.82))
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .font(.system(size: 9, weight: .semibold, design: .rounded))
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            .font(.system(size: 11, weight: .semibold, design: .rounded))
+            .lineLimit(3)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 7))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 13)

@@ -286,11 +286,11 @@ final class UsageLogParserTests: XCTestCase {
     func testImpactEquivalentsScaleToHumanUnits() {
         XCTAssertEqual(
             ImpactEquivalence.electricity(ImpactEquivalence.averageUSHomeKWhPerDay),
-            "≈ 1.0 day · average U.S. home"
+            "About 1.0 day of electricity for an average U.S. home"
         )
         XCTAssertEqual(
             ImpactEquivalence.water(ImpactEquivalence.waterSenseShowerLitersPerMinute * 15),
-            "≈ 1.0 × 15-min shower"
+            "About 1.0 fifteen-minute WaterSense shower"
         )
         XCTAssertTrue(ImpactEquivalence.electricity(0.1).contains("min"))
         XCTAssertTrue(ImpactEquivalence.water(7.6).contains("min"))
