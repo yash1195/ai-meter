@@ -312,6 +312,49 @@ final class UsageLogParserTests: XCTestCase {
         XCTAssertEqual(manifest.releaseURL.host, "github.com")
     }
 
+    func testLiveUsageActivityIgnoresInitialIndexAndScalesBursts() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        var activity = LiveUsageActivity()
+
+        XCTAssertEqual(activity.sample(totalTokens: 5_000_000, at: start), 0)
+
+        let smallBurst = activity.sample(
+            totalTokens: 5_000_100,
+            at: start.addingTimeInterval(1)
+        )
+        XCTAssertGreaterThan(smallBurst, 0.3)
+        XCTAssertLessThan(smallBurst, 0.5)
+
+        let largeBurst = activity.sample(
+            totalTokens: 5_100_100,
+            at: start.addingTimeInterval(2)
+        )
+        XCTAssertEqual(largeBurst, 1, accuracy: 0.0001)
+    }
+
+    func testLiveUsageActivityDecaysAndDoesNotSpikeOnCounterReset() {
+        let start = Date(timeIntervalSince1970: 2_000)
+        var activity = LiveUsageActivity()
+
+        _ = activity.sample(totalTokens: 10_000, at: start)
+        _ = activity.sample(
+            totalTokens: 110_000,
+            at: start.addingTimeInterval(1)
+        )
+
+        let decayed = activity.sample(
+            totalTokens: 110_000,
+            at: start.addingTimeInterval(1 + LiveUsageActivity.decayHalfLife)
+        )
+        XCTAssertEqual(decayed, 0.5, accuracy: 0.0001)
+
+        let afterReset = activity.sample(
+            totalTokens: 1_000,
+            at: start.addingTimeInterval(1 + LiveUsageActivity.decayHalfLife * 2)
+        )
+        XCTAssertEqual(afterReset, 0.25, accuracy: 0.0001)
+    }
+
     @MainActor
     func testWidgetScreenshotRendersViewPixelsAsPNG() throws {
         let view = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 180))

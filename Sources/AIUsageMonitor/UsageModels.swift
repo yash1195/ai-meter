@@ -152,6 +152,10 @@ struct UsageSnapshot: Equatable, Sendable {
         activeSessionsByProvider.values.reduce(0, +)
     }
 
+    var totalTokens: Int {
+        daily.values.reduce(0) { $0 + $1.total.totalTokens }
+    }
+
     var earliestDate: Date? {
         daily.keys.min()
     }

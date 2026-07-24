@@ -16,12 +16,14 @@ final class UsageViewModel: ObservableObject {
     @Published var waterLitersPerKWh: Double {
         didSet { UserDefaults.standard.set(waterLitersPerKWh, forKey: Self.waterKey) }
     }
+    @Published private(set) var liveActivityLevel = 0.0
     @Published private(set) var screenshotConfirmation: String?
 
     private static let energyKey = "methodologyV2.electricityKWhPerMillionTokens"
     private static let pueKey = "methodologyV2.powerUsageEffectiveness"
     private static let waterKey = "methodologyV2.waterLitersPerKWh"
     private let collector: UsageCollector
+    private var liveUsageActivity = LiveUsageActivity()
     private var refreshTask: Task<Void, Never>?
 
     init(collector: UsageCollector = UsageCollector()) {
@@ -64,7 +66,7 @@ final class UsageViewModel: ObservableObject {
             while !Task.isCancelled {
                 let snapshot = await collector.refresh()
                 guard let self else { return }
-                self.snapshot = snapshot
+                self.apply(snapshot)
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
             }
         }
@@ -73,7 +75,7 @@ final class UsageViewModel: ObservableObject {
     func refreshNow() {
         Task { [weak self, collector] in
             let snapshot = await collector.refresh()
-            self?.snapshot = snapshot
+            self?.apply(snapshot)
         }
     }
 
@@ -97,6 +99,14 @@ final class UsageViewModel: ObservableObject {
 
     func quit() {
         NSApplication.shared.terminate(nil)
+    }
+
+    private func apply(_ snapshot: UsageSnapshot) {
+        liveActivityLevel = liveUsageActivity.sample(
+            totalTokens: snapshot.totalTokens,
+            at: snapshot.generatedAt
+        )
+        self.snapshot = snapshot
     }
 
     deinit {

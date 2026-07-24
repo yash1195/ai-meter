@@ -100,7 +100,7 @@ struct UsagePanelView: View {
                             }
                         }
                         .buttonStyle(.plain)
-                        .help("Open the latest AI Meter release")
+                        .help("Install the latest AI Meter update")
                     } else if model.screenshotConfirmation != nil {
                         Text("COPIED")
                             .font(.system(size: 8, weight: .semibold, design: .monospaced))
@@ -122,14 +122,9 @@ struct UsagePanelView: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(.primary.opacity(0.12), lineWidth: 1)
 
-            HStack {
-                Rectangle()
-                    .fill(brandAccent)
-                    .frame(width: 28, height: 1)
-                Spacer()
-            }
-            .padding(.horizontal, 12)
-            .frame(maxHeight: .infinity, alignment: .top)
+            LiveActivityBar(level: model.liveActivityLevel, tint: brandAccent)
+                .padding(.horizontal, 12)
+                .frame(maxHeight: .infinity, alignment: .top)
         }
     }
 
@@ -436,6 +431,51 @@ struct UsagePanelView: View {
         case .idle:
             Button("Check for updates", action: updateChecker.checkNow)
         }
+    }
+}
+
+private struct LiveActivityBar: View {
+    let level: Double
+    let tint: Color
+
+    private var normalizedLevel: Double {
+        min(1, max(0, level))
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let minimumWidth = min(28, geometry.size.width)
+            let fillWidth = minimumWidth
+                + (geometry.size.width - minimumWidth) * normalizedLevel
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(.primary.opacity(0.055))
+                    .frame(height: 1)
+
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [tint, tint.opacity(0.76)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: fillWidth, height: normalizedLevel > 0.03 ? 2 : 1)
+                    .shadow(
+                        color: tint.opacity(normalizedLevel * 0.65),
+                        radius: 3,
+                        x: 0,
+                        y: 0
+                    )
+            }
+            .frame(height: 3, alignment: .top)
+        }
+        .frame(height: 3)
+        .animation(.spring(response: 0.45, dampingFraction: 0.82), value: normalizedLevel)
+        .accessibilityElement()
+        .accessibilityLabel("Recent AI usage activity")
+        .accessibilityValue("\(Int((normalizedLevel * 100).rounded())) percent")
     }
 }
 
