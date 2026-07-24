@@ -152,6 +152,7 @@ struct UsagePanelView: View {
                 label: "TOKENS",
                 value: UsageFormatting.abbreviated(total),
                 detail: "provider reported",
+                comparison: nil,
                 systemImage: "number",
                 tint: .accentColor,
                 prominent: true
@@ -160,6 +161,7 @@ struct UsagePanelView: View {
                 label: "ELECTRICITY",
                 value: UsageFormatting.electricity(energy),
                 detail: "estimated",
+                comparison: ImpactEquivalence.electricity(energy),
                 systemImage: "bolt.fill",
                 tint: .yellow,
                 prominent: false
@@ -168,6 +170,7 @@ struct UsagePanelView: View {
                 label: "WATER",
                 value: UsageFormatting.water(water),
                 detail: "estimated",
+                comparison: ImpactEquivalence.water(water),
                 systemImage: "drop.fill",
                 tint: .cyan,
                 prominent: false
@@ -355,6 +358,20 @@ struct UsagePanelView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
 
+                VStack(alignment: .leading, spacing: 5) {
+                    Label("Human-scale equivalents", systemImage: "equal.circle")
+                        .font(.caption.weight(.semibold))
+                    Text("Electricity is compared with the 2024 U.S. residential average of 865 kWh/month. Water is compared with an EPA WaterSense shower at 7.6 L/min. These analogies do not change the impact estimate.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    HStack(spacing: 12) {
+                        Link("EIA home baseline", destination: URL(string: "https://www.eia.gov/todayinenergy/detail.php?id=65244")!)
+                        Link("EPA shower baseline", destination: URL(string: "https://www.epa.gov/system/files/documents/2023-08/ws-homes-TRM-4-ShowerheadsTechSheet.pdf")!)
+                    }
+                    .font(.caption2)
+                    .buttonStyle(.link)
+                }
+
                 HStack(spacing: 12) {
                     Link("SCI for AI", destination: URL(string: "https://greensoftware.foundation/standards/sci-ai/")!)
                     Link("Inference study", destination: URL(string: "https://arxiv.org/abs/2509.20241")!)
@@ -463,6 +480,7 @@ private struct SummaryMetric: View {
     let label: String
     let value: String
     let detail: String
+    let comparison: String?
     let systemImage: String
     let tint: Color
     let prominent: Bool
@@ -487,6 +505,19 @@ private struct SummaryMetric: View {
             Text(detail)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.tertiary)
+            Group {
+                if let comparison {
+                    Text(comparison)
+                        .foregroundStyle(tint.opacity(0.9))
+                } else {
+                    Text(" ")
+                        .hidden()
+                        .accessibilityHidden(true)
+                }
+            }
+            .font(.system(size: 9, weight: .semibold, design: .rounded))
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 13)

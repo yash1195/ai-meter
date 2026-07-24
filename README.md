@@ -30,6 +30,7 @@ data boundary and update-check network behavior.
 - Interactive hourly, daily, or monthly chart with one series per coding harness.
 - Provider filters and provider/model breakdowns from actual local metadata.
 - Token, estimated electricity, and estimated water chart modes.
+- Familiar home-electricity and WaterSense-shower equivalents beside impact totals.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
 - Automatic update availability checks with an in-widget update link.
 - Copy an exact PNG screenshot of the visible widget using the Screenshot button.

@@ -283,6 +283,19 @@ final class UsageLogParserTests: XCTestCase {
         XCTAssertEqual(assumptions.water(for: 2_000_000), 0.4, accuracy: 0.0001)
     }
 
+    func testImpactEquivalentsScaleToHumanUnits() {
+        XCTAssertEqual(
+            ImpactEquivalence.electricity(ImpactEquivalence.averageUSHomeKWhPerDay),
+            "≈ 1.0 day · average U.S. home"
+        )
+        XCTAssertEqual(
+            ImpactEquivalence.water(ImpactEquivalence.waterSenseShowerLitersPerMinute * 15),
+            "≈ 1.0 × 15-min shower"
+        )
+        XCTAssertTrue(ImpactEquivalence.electricity(0.1).contains("min"))
+        XCTAssertTrue(ImpactEquivalence.water(7.6).contains("min"))
+    }
+
     func testUpdateCheckerComparesMonotonicBuildNumbers() {
         XCTAssertTrue(UpdateChecker.isNewer(build: 2, than: 1))
         XCTAssertFalse(UpdateChecker.isNewer(build: 1, than: 1))
