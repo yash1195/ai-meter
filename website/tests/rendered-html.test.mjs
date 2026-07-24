@@ -12,6 +12,7 @@ test("exports a static AI Meter landing page", async () => {
   assert.match(html, /Measure your AI/);
   assert.match(html, /No usage data leaves your Mac/);
   assert.match(html, /install\.sh/);
+  assert.match(html, /AI-Meter\.dmg/);
   assert.match(html, /Direct download/);
   assert.match(html, /View on GitHub/);
   assert.match(html, /ai-meter-app\.png/);

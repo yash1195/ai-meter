@@ -31,6 +31,11 @@ swift run AIUsageMonitor
 
 ## Install an official release
 
+Download the latest `AI-Meter.dmg`, open it, and drag AI Meter into
+**Applications**. The disk image is signed and notarized by Apple.
+
+Alternatively, install from Terminal:
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/yash1195/ai-meter/main/install.sh | sh
 ```

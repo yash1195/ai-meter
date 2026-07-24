@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const github = "https://github.com/yash1195/ai-meter";
 const download =
-  "https://github.com/yash1195/ai-meter/releases/latest/download/AI-Meter.zip";
+  "https://github.com/yash1195/ai-meter/releases/latest/download/AI-Meter.dmg";
 
 function Mark() {
   return (
