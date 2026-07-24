@@ -11,10 +11,13 @@ AI Meter currently reads:
 | Claude Code | `$CLAUDE_CONFIG_DIR/projects/**/*.jsonl` (default `~/.claude`) | Provider-reported message usage |
 | OpenCode | `$XDG_DATA_HOME/opencode/opencode*.db` (default `~/.local/share`) | Provider-reported message usage |
 | Gemini CLI | `$GEMINI_CLI_HOME/.gemini/tmp/**/chats/**/*.jsonl` (default `~`) | Provider-reported message usage |
+| Cursor | `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb` | Local per-response token counts; timeline estimated |
 
 Model names are discovered from the records rather than kept in a hard-coded
 model list. New OpenAI, Anthropic, Google, OpenCode, gateway, or local model
 names therefore appear automatically when a supported harness records them.
+Cursor does not currently retain model names alongside its local token counters,
+so its usage appears under `Cursor model (not recorded locally)`.
 
 It extracts usage metadata without retaining or transmitting prompt, response,
 source-code, or tool-output content. See [PRIVACY.md](PRIVACY.md) for the exact
@@ -96,16 +99,22 @@ Apple notarization.
   local SQLite message ledger. Reasoning is included once in the token total.
 - Gemini CLI stores per-response input, cached, output, thought, and total
   counts in its local chat recordings.
+- Cursor stores per-response input and output counts in its local chat database.
+  It does not retain a wall-clock timestamp for each response, so AI Meter keeps
+  the exact token total and places responses in order between the conversation's
+  creation and last-update timestamps.
 - Repeated message records are deduplicated by harness and message ID.
 - Events are assigned to a day using the Mac's current calendar and time zone.
 
 ## Compatibility policy
 
-AI Meter adds a harness only when it exposes a stable local record containing
-both timestamps and provider-reported token counts. Cursor, GitHub Copilot, and
-Aider are not currently counted because they do not expose an equivalent
-documented local token ledger. AI Meter does not estimate their usage from
-message text or inspect undocumented editor databases.
+AI Meter prefers documented, stable local usage records. Cursor documents that
+chat history is stored in a local SQLite database, but its token metadata schema
+is not public. Cursor support is therefore defensive and may need updates if
+Cursor changes that schema. AI Meter selects only token and conversation timing
+metadata from the database; it never reads Cursor credentials or estimates
+tokens from message text. GitHub Copilot and Aider are not currently counted
+because they do not expose an equivalent local token ledger.
 
 ## Environmental estimates
 

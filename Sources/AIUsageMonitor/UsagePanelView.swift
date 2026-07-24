@@ -670,6 +670,7 @@ private extension UsageProvider {
         case .claude: .orange
         case .openCode: Color(red: 0.72, green: 0.96, blue: 0.34)
         case .geminiCLI: .purple
+        case .cursor: .cyan
         }
     }
 }

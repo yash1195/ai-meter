@@ -104,6 +104,50 @@ final class UsageLogParserTests: XCTestCase {
         XCTAssertEqual(result.messageCount, 1)
     }
 
+    func testCursorReaderExtractsOnlyLocalTokenMetadata() throws {
+        let fileManager = FileManager.default
+        let directory = fileManager.temporaryDirectory
+            .appendingPathComponent("AIUsageMonitor-Cursor-\(UUID().uuidString)", isDirectory: true)
+        defer { try? fileManager.removeItem(at: directory) }
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        let databaseURL = directory.appendingPathComponent("state.vscdb")
+
+        var database: OpaquePointer?
+        XCTAssertEqual(sqlite3_open(databaseURL.path, &database), SQLITE_OK)
+        defer { sqlite3_close(database) }
+        let composerID = "11111111-1111-4111-8111-111111111111"
+        let created = Int64(Date().addingTimeInterval(-60).timeIntervalSince1970 * 1_000)
+        let updated = Int64(Date().timeIntervalSince1970 * 1_000)
+        let sql = """
+        CREATE TABLE cursorDiskKV (key TEXT PRIMARY KEY, value BLOB);
+        INSERT INTO cursorDiskKV VALUES (
+          'composerData:\(composerID)',
+          '{"createdAt":\(created),"lastUpdatedAt":\(updated),"text":"must not be parsed"}'
+        );
+        INSERT INTO cursorDiskKV VALUES (
+          'bubbleId:\(composerID):22222222-2222-4222-8222-222222222222',
+          '{"type":2,"tokenCount":{"inputTokens":120,"outputTokens":30},"text":"private response"}'
+        );
+        INSERT INTO cursorDiskKV VALUES (
+          'bubbleId:\(composerID):33333333-3333-4333-8333-333333333333',
+          '{"type":1,"tokenCount":{"inputTokens":999,"outputTokens":999},"text":"private prompt"}'
+        );
+        """
+        XCTAssertEqual(sqlite3_exec(database, sql, nil, nil, nil), SQLITE_OK)
+
+        let result = try CursorUsageReader.read(databaseURL: databaseURL, calendar: .current)
+        let counts = result.daily.values.first?.total
+        XCTAssertEqual(counts?.uncachedInputTokens, 120)
+        XCTAssertEqual(counts?.outputTokens, 30)
+        XCTAssertEqual(counts?.totalTokens, 150)
+        XCTAssertEqual(
+            result.daily.values.first?.dimensions.keys.first?.model,
+            "Cursor model (not recorded locally)"
+        )
+        XCTAssertEqual(result.messageCount, 1)
+        XCTAssertEqual(result.sessionActivity.keys.first, composerID)
+    }
+
     func testCodexDeltaDoesNotDoubleCountCumulativeTotals() {
         let previous = UsageCounts(
             uncachedInputTokens: 100,

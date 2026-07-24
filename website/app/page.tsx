@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AI Meter — Measure your AI locally",
     description:
-      "See Codex, Claude Code, OpenCode, and Gemini CLI usage—entirely on your Mac.",
+      "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     url: "https://ai-meter.app/",
     siteName: "AI Meter",
     type: "website",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AI Meter — Measure your AI locally",
     description:
-      "See Codex, Claude Code, OpenCode, and Gemini CLI usage—entirely on your Mac.",
+      "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     images: ["/og-image.png"],
   },
 };
@@ -138,8 +138,8 @@ export default function Home() {
             <strong className="method-symbol">#</strong>
             <h3>Provider-reported tokens</h3>
             <p>
-              Codex, Claude Code, OpenCode, and Gemini CLI token counts are
-              read from local records, deduplicated, and combined on your Mac.
+              Codex, Claude Code, Cursor, OpenCode, and Gemini CLI token counts
+              are read from local records, deduplicated, and combined on your Mac.
             </p>
           </article>
 
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       <footer className="footer shell">
-        <span>Codex · Claude Code · OpenCode · Gemini CLI</span>
+        <span>Codex · Claude Code · Cursor · OpenCode · Gemini CLI</span>
         <span>Free for individuals and companies</span>
         <span>© 2026 AI Meter</span>
       </footer>

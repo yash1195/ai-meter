@@ -5,6 +5,7 @@ enum UsageProvider: String, CaseIterable, Hashable, Sendable, Identifiable {
     case claude = "Claude Code"
     case openCode = "OpenCode"
     case geminiCLI = "Gemini CLI"
+    case cursor = "Cursor"
 
     var id: String { rawValue }
 
@@ -14,6 +15,7 @@ enum UsageProvider: String, CaseIterable, Hashable, Sendable, Identifiable {
         case .claude: "Unknown Claude model"
         case .openCode: "Unknown OpenCode model"
         case .geminiCLI: "Unknown Gemini model"
+        case .cursor: "Cursor model (not recorded locally)"
         }
     }
 }
@@ -24,6 +26,7 @@ enum ProviderFilter: String, CaseIterable, Identifiable {
     case claude = "Claude"
     case openCode = "OpenCode"
     case geminiCLI = "Gemini"
+    case cursor = "Cursor"
 
     var id: String { rawValue }
 
@@ -34,6 +37,7 @@ enum ProviderFilter: String, CaseIterable, Identifiable {
         case .claude: provider == .claude
         case .openCode: provider == .openCode
         case .geminiCLI: provider == .geminiCLI
+        case .cursor: provider == .cursor
         }
     }
 }

@@ -10,11 +10,19 @@ AI Meter scans local usage records stored by supported coding harnesses:
 - `$CLAUDE_CONFIG_DIR/projects/**/*.jsonl` (default `~/.claude`)
 - `$XDG_DATA_HOME/opencode/opencode*.db` (default `~/.local/share`)
 - `$GEMINI_CLI_HOME/.gemini/tmp/**/chats/**/*.jsonl` (default `~`)
+- `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb`
 
 The JSONL and SQLite records are processed on the Mac to extract timestamps,
 coding-harness and model names, session identifiers, and provider-reported
 token counts. AI Meter does not extract or retain prompt text, response text,
 source code, or tool output.
+
+For Cursor, AI Meter issues a read-only SQLite query that selects only
+conversation identifiers, conversation creation/update times, and input/output
+token counters. It does not query Cursor authentication records. Cursor does
+not store a durable timestamp or model name alongside every local token count,
+so AI Meter estimates chart placement from conversation timing while preserving
+the exact locally recorded total.
 
 Usage history is rebuilt from the local provider files. AI Meter stores only
 interface preferences and environmental-estimation assumptions in

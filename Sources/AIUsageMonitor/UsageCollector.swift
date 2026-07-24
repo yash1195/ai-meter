@@ -17,9 +17,11 @@ actor UsageCollector {
     private let calendar: Calendar
     private let jsonlRoots: [UsageProvider: [URL]]
     private let openCodeDataRoot: URL
+    private let cursorDatabaseURL: URL
     private var states: [URL: FileState] = [:]
     private var observedMessageCounts: [String: UsageCounts] = [:]
     private var openCodeResults: [URL: OpenCodeUsageResult] = [:]
+    private var cursorResult: CursorUsageResult?
     private var sessionActivity: [String: Date] = [:]
     private var lastDiscovery = Date.distantPast
 
@@ -50,12 +52,16 @@ actor UsageCollector {
             .geminiCLI: [geminiHome.appendingPathComponent(".gemini/tmp", isDirectory: true)]
         ]
         self.openCodeDataRoot = xdgData.appendingPathComponent("opencode", isDirectory: true)
+        self.cursorDatabaseURL = homeDirectory
+            .appendingPathComponent("Library/Application Support/Cursor/User/globalStorage", isDirectory: true)
+            .appendingPathComponent("state.vscdb")
     }
 
     func refresh(now: Date = Date()) -> UsageSnapshot {
         if now.timeIntervalSince(lastDiscovery) >= 3 {
             discoverFiles()
             refreshOpenCode()
+            refreshCursor()
             lastDiscovery = now
         }
 
@@ -82,10 +88,12 @@ actor UsageCollector {
         states.removeAll(keepingCapacity: true)
         observedMessageCounts.removeAll(keepingCapacity: true)
         openCodeResults.removeAll(keepingCapacity: true)
+        cursorResult = nil
         sessionActivity.removeAll(keepingCapacity: true)
         lastDiscovery = .distantPast
         discoverFiles()
         refreshOpenCode()
+        refreshCursor()
         for url in Array(states.keys) {
             try? consumeNewData(at: url)
         }
@@ -149,6 +157,17 @@ actor UsageCollector {
             }
         }
         openCodeResults = refreshed
+    }
+
+    private func refreshCursor() {
+        guard fileManager.fileExists(atPath: cursorDatabaseURL.path) else {
+            cursorResult = nil
+            return
+        }
+        cursorResult = try? CursorUsageReader.read(
+            databaseURL: cursorDatabaseURL,
+            calendar: calendar
+        )
     }
 
     private func consumeNewData(at url: URL) throws {
@@ -249,7 +268,9 @@ actor UsageCollector {
         let hasJSONLRoot = jsonlRoots.values
             .flatMap { $0 }
             .contains { fileManager.fileExists(atPath: $0.path) }
-        if !hasJSONLRoot && !fileManager.fileExists(atPath: openCodeDataRoot.path) {
+        if !hasJSONLRoot
+            && !fileManager.fileExists(atPath: openCodeDataRoot.path)
+            && !fileManager.fileExists(atPath: cursorDatabaseURL.path) {
             snapshot.sourceWarnings.append("No supported local AI usage folders were found")
         }
 
@@ -278,6 +299,14 @@ actor UsageCollector {
             }
         }
 
+        if let cursorResult {
+            merge(cursorResult.daily, into: &snapshot.daily)
+            merge(cursorResult.hourly, into: &snapshot.hourly)
+            for (sessionID, timestamp) in cursorResult.sessionActivity {
+                recordActivity(provider: .cursor, sessionID: sessionID, at: timestamp)
+            }
+        }
+
         let activeCutoff = now.addingTimeInterval(-5 * 60)
         for (key, activity) in sessionActivity where activity >= activeCutoff {
             for provider in UsageProvider.allCases where key.hasPrefix("\(provider.rawValue):") {
@@ -286,7 +315,7 @@ actor UsageCollector {
             }
         }
 
-        snapshot.indexedFileCount = states.count + openCodeResults.count
+        snapshot.indexedFileCount = states.count + openCodeResults.count + (cursorResult == nil ? 0 : 1)
         return snapshot
     }
 

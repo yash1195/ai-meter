@@ -13,7 +13,7 @@ enum UsageLogParser {
         case .geminiCLI:
             isRelevant = lineData.range(of: Data("\"gemini\"".utf8)) != nil
                 && lineData.range(of: Data("\"tokens\"".utf8)) != nil
-        case .openCode:
+        case .openCode, .cursor:
             return nil
         }
         guard isRelevant else { return nil }
@@ -33,7 +33,7 @@ enum UsageLogParser {
             return parseClaude(json)
         case .geminiCLI:
             return parseGemini(json)
-        case .openCode:
+        case .openCode, .cursor:
             return nil
         }
     }
