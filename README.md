@@ -59,16 +59,6 @@ Apple code signature, Gatekeeper approval, and Developer ID team, then installs
 AI Meter in `~/Applications`. You can inspect [install.sh](install.sh) before
 running it.
 
-## Website
-
-The marketing site source lives in `website/`. To build and test it locally:
-
-```sh
-cd website
-npm install
-npm test
-```
-
 ## Test
 
 ```sh
