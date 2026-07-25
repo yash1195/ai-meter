@@ -3,12 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Meter — Local AI usage for your Mac",
+    default: "AI Meter — Local AI usage and impact estimates",
     template: "%s — AI Meter",
   },
   description:
-    "Track coding-agent token usage, electricity, and water estimates—entirely on your Mac.",
-  metadataBase: new URL("https://yash1195.github.io/ai-meter"),
+    "Measure local coding-agent token usage and estimate associated electricity and direct cooling-water use—entirely on your Mac.",
+  metadataBase: new URL("https://ai-meter.app"),
 };
 
 export default function RootLayout({

@@ -5,13 +5,13 @@ import { InstallCommand } from "./InstallCommand";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ai-meter.app"),
-  title: "AI Meter — Local AI usage for your Mac",
+  title: "AI Meter — Local AI usage and impact estimates",
   description:
-    "See coding-agent token usage, electricity, and water estimates—entirely on your Mac.",
+    "Measure local coding-agent token usage and estimate associated electricity and direct cooling-water use—entirely on your Mac.",
   openGraph: {
-    title: "AI Meter — Measure your AI usage locally",
+    title: "AI Meter — Measure tokens. Estimate energy and water.",
     description:
-      "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
+      "Measure Codex, Claude Code, Cursor, OpenCode, and Gemini CLI token usage, with local electricity and direct cooling-water estimates.",
     url: "https://ai-meter.app/",
     siteName: "AI Meter",
     type: "website",
@@ -26,9 +26,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Meter — Measure your AI usage locally",
+    title: "AI Meter — Measure tokens. Estimate energy and water.",
     description:
-      "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
+      "Measure coding-agent token usage, with local electricity and direct cooling-water estimates.",
     images: ["/og-image.png"],
   },
 };
@@ -77,9 +77,9 @@ export default function Home() {
           </h1>
 
           <p className="lede">
-            AI Meter shows your coding-agent token usage, electricity, and
-            water estimates in the macOS menu bar. No accounts. No AI
-            telemetry. No usage data leaves your Mac.
+            AI Meter measures token usage across your local coding agents and
+            estimates the associated electricity and direct cooling-water use.
+            No accounts. No usage data leaves your Mac.
           </p>
 
           <div className="actions">
@@ -124,7 +124,7 @@ export default function Home() {
         <div className="method-heading">
           <div>
             <span className="method-kicker">TRANSPARENT ESTIMATION</span>
-            <h2>From tokens to estimated impact.</h2>
+            <h2>From measured tokens to estimated impact.</h2>
           </div>
           <p>
             AI Meter follows a SCI for AI-aligned consumer boundary. These are

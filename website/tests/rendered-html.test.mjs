@@ -11,7 +11,11 @@ test("exports a static AI Meter landing page", async () => {
   const sourceInstaller = await readFile(new URL("../../install.sh", import.meta.url), "utf8");
 
   assert.match(html, /AI Meter/);
-  assert.match(html, /Measure your AI usage/);
+  assert.match(html, /Measure your/);
+  assert.match(html, /AI usage\./);
+  assert.match(html, /Locally\./);
+  assert.match(html, /measures token usage across your local coding agents/);
+  assert.match(html, /estimates the associated electricity and direct cooling-water use/);
   assert.match(html, /No usage data leaves your Mac/);
   assert.match(html, /install\.sh/);
   assert.match(html, /https:\/\/ai-meter\.app\/install\.sh/);
@@ -28,7 +32,7 @@ test("exports a static AI Meter landing page", async () => {
   assert.match(html, /Direct download/);
   assert.match(html, /View on GitHub/);
   assert.match(html, /ai-meter-app\.png/);
-  assert.match(html, /From tokens to estimated impact/);
+  assert.match(html, /From measured tokens to estimated impact/);
   assert.match(html, /0\.39 kWh/);
   assert.match(html, /Energy ÷ PUE × WUE/);
   assert.match(html, /METHODOLOGY\.md/);

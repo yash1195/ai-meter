@@ -1,7 +1,22 @@
 # AI Meter
 
-A local macOS menu-bar dashboard that totals token usage across concurrent AI
-coding-agent sessions.
+A native macOS menu-bar app that measures token usage across Codex, Claude Code,
+Cursor, OpenCode, and Gemini CLI, then estimates the associated electricity and
+direct cooling-water use. Token counts come from local records; environmental
+values are transparent, adjustable scenarios—not provider measurements.
+
+[Website](https://ai-meter.app/) ·
+[Download for macOS](https://github.com/yash1195/ai-meter/releases/latest/download/AI-Meter.dmg) ·
+[Methodology](METHODOLOGY.md) ·
+[Privacy](PRIVACY.md)
+
+<p align="center">
+  <img
+    src="website/public/ai-meter-app.png"
+    width="720"
+    alt="AI Meter showing local coding-agent tokens with estimated electricity and direct cooling-water use"
+  />
+</p>
 
 AI Meter currently reads:
 
@@ -58,6 +73,18 @@ The installer downloads the latest `AI-Meter.dmg`, verifies the bundle ID,
 Apple code signature, Gatekeeper approval, and Developer ID team, then installs
 AI Meter in `/Applications`. macOS may ask for administrator permission. You
 can inspect [install.sh](install.sh) before running it.
+
+## Quit and uninstall
+
+Open AI Meter from the menu bar and select **Quit** at the bottom of the
+dashboard.
+
+To uninstall it, quit AI Meter and move `/Applications/AI Meter.app` to the
+Trash. AI Meter does not modify or remove coding-agent session files. You may
+optionally remove its derived local cache and preferences:
+
+- `~/Library/Caches/com.zeko.aimeter`
+- `~/Library/Preferences/com.zeko.aimeter.plist`
 
 ## Test
 
