@@ -17,6 +17,8 @@ test("exports a static AI Meter landing page", async () => {
   assert.match(html, /https:\/\/ai-meter\.app\/install\.sh/);
   assert.doesNotMatch(html, /raw\.githubusercontent\.com/);
   assert.equal(servedInstaller, sourceInstaller);
+  assert.match(sourceInstaller, /applications_directory="\/Applications"/);
+  assert.doesNotMatch(sourceInstaller, /applications_directory="\$\{HOME\}\/Applications"/);
   assert.match(html, /AI-Meter\.dmg/);
   assert.match(html, /rel="icon"/);
   assert.match(html, /rel="apple-touch-icon"/);

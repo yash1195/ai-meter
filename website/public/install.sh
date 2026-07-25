@@ -69,30 +69,65 @@ if [ "${actual_team_id}" != "${EXPECTED_TEAM_ID}" ]; then
   exit 1
 fi
 
-applications_directory="${HOME}/Applications"
+applications_directory="/Applications"
 destination_app="${applications_directory}/AI Meter.app"
 staged_app="${applications_directory}/.AI Meter.installing.$$"
 backup_app="${applications_directory}/.AI Meter.backup.$$"
-mkdir -p "${applications_directory}"
+legacy_app="${HOME}/Applications/AI Meter.app"
+needs_admin=0
 
-echo "Installing AI Meter in ${applications_directory}…"
-rm -rf "${staged_app}" "${backup_app}"
-cp -R "${source_app}" "${staged_app}"
-codesign --verify --deep --strict "${staged_app}" 2>/dev/null
-
-if [ -d "${destination_app}" ]; then
-  mv "${destination_app}" "${backup_app}"
+if [ ! -w "${applications_directory}" ]; then
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "Administrator permission is required to install AI Meter in /Applications." >&2
+    exit 1
+  fi
+  needs_admin=1
+  echo "Administrator permission is required to install AI Meter in /Applications."
+  sudo -v
 fi
 
-if mv "${staged_app}" "${destination_app}"; then
-  rm -rf "${backup_app}"
+run_install_command() {
+  if [ "${needs_admin}" -eq 1 ]; then
+    sudo "$@"
+  else
+    "$@"
+  fi
+}
+
+if [ -d "${destination_app}" ]; then
+  existing_bundle_id="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "${destination_app}/Contents/Info.plist" 2>/dev/null || true)"
+  if [ "${existing_bundle_id}" != "${EXPECTED_BUNDLE_ID}" ]; then
+    echo "Refusing to replace ${destination_app}: its bundle ID is not ${EXPECTED_BUNDLE_ID}." >&2
+    exit 1
+  fi
+fi
+
+echo "Installing AI Meter in ${applications_directory}…"
+run_install_command rm -rf "${staged_app}" "${backup_app}"
+run_install_command cp -R "${source_app}" "${staged_app}"
+if ! codesign --verify --deep --strict "${staged_app}" 2>/dev/null; then
+  run_install_command rm -rf "${staged_app}"
+  echo "The staged app failed code-signature verification." >&2
+  exit 1
+fi
+
+if [ -d "${destination_app}" ]; then
+  run_install_command mv "${destination_app}" "${backup_app}"
+fi
+
+if run_install_command mv "${staged_app}" "${destination_app}"; then
+  run_install_command rm -rf "${backup_app}"
 else
+  run_install_command rm -rf "${staged_app}"
   if [ -d "${backup_app}" ]; then
-    mv "${backup_app}" "${destination_app}"
+    run_install_command mv "${backup_app}" "${destination_app}"
   fi
   echo "AI Meter could not be installed." >&2
   exit 1
 fi
 
 echo "AI Meter installed successfully."
+if [ -d "${legacy_app}" ]; then
+  echo "Note: an older copy may remain at ${legacy_app}. You can remove it after confirming the new app works."
+fi
 open "${destination_app}"

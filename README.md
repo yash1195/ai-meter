@@ -56,8 +56,8 @@ curl -fsSL https://ai-meter.app/install.sh | sh
 
 The installer downloads the latest `AI-Meter.dmg`, verifies the bundle ID,
 Apple code signature, Gatekeeper approval, and Developer ID team, then installs
-AI Meter in `~/Applications`. You can inspect [install.sh](install.sh) before
-running it.
+AI Meter in `/Applications`. macOS may ask for administrator permission. You
+can inspect [install.sh](install.sh) before running it.
 
 ## Test
 
