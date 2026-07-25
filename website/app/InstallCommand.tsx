@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const command =
-  "curl -fsSL https://raw.githubusercontent.com/yash1195/ai-meter/main/install.sh | sh";
+  "curl -fsSL https://ai-meter.app/install.sh | sh";
 
 export function InstallCommand() {
   const [copied, setCopied] = useState(false);

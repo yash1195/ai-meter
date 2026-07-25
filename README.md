@@ -51,7 +51,7 @@ Download the latest `AI-Meter.dmg`, open it, and drag AI Meter into
 Alternatively, install from Terminal:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/yash1195/ai-meter/main/install.sh | sh
+curl -fsSL https://ai-meter.app/install.sh | sh
 ```
 
 The installer downloads the latest `AI-Meter.dmg`, verifies the bundle ID,

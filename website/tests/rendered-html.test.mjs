@@ -7,11 +7,16 @@ const siteRoot = new URL("../", import.meta.url);
 test("exports a static AI Meter landing page", async () => {
   await access(new URL("out/index.html", siteRoot));
   const html = await readFile(new URL("out/index.html", siteRoot), "utf8");
+  const servedInstaller = await readFile(new URL("out/install.sh", siteRoot), "utf8");
+  const sourceInstaller = await readFile(new URL("../../install.sh", import.meta.url), "utf8");
 
   assert.match(html, /AI Meter/);
   assert.match(html, /Measure your AI/);
   assert.match(html, /No usage data leaves your Mac/);
   assert.match(html, /install\.sh/);
+  assert.match(html, /https:\/\/ai-meter\.app\/install\.sh/);
+  assert.doesNotMatch(html, /raw\.githubusercontent\.com/);
+  assert.equal(servedInstaller, sourceInstaller);
   assert.match(html, /AI-Meter\.dmg/);
   assert.match(html, /rel="icon"/);
   assert.match(html, /rel="apple-touch-icon"/);
