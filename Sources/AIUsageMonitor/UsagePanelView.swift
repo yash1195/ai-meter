@@ -613,12 +613,13 @@ private struct InteractiveUsageChart: View {
             Chart {
                 ForEach(visibleProviders) { provider in
                     ForEach(report.bins) { bin in
+                        // Linear interpolation keeps the rendered chart within the measured samples.
                         AreaMark(
                             x: .value("Time", bin.start, unit: report.calendarComponent),
                             yStart: .value("Baseline", 0),
                             yEnd: .value(metric.rawValue, value(for: bin.counts(for: provider)))
                         )
-                        .interpolationMethod(.catmullRom)
+                        .interpolationMethod(.linear)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [provider.chartColor.opacity(0.24), provider.chartColor.opacity(0.012)],
@@ -631,7 +632,7 @@ private struct InteractiveUsageChart: View {
                             y: .value(metric.rawValue, value(for: bin.counts(for: provider))),
                             series: .value("Provider series", provider.rawValue)
                         )
-                        .interpolationMethod(.catmullRom)
+                        .interpolationMethod(.linear)
                         .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                         .foregroundStyle(by: .value("Provider", provider.rawValue))
                     }
