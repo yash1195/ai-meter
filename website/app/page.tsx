@@ -70,9 +70,10 @@ export default function Home() {
           </div>
 
           <h1>
-            Measure your AI usage.
-            <br />
-            <em>Locally.</em>
+            <span>Measure your</span>{" "}
+            <span className="headline-finish">
+              AI usage. <em>Locally.</em>
+            </span>
           </h1>
 
           <p className="lede">

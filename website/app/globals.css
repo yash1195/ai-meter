@@ -116,9 +116,9 @@ a {
 .hero {
   min-height: calc(100vh - 126px);
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(440px, 1.12fr);
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 0.9fr);
   align-items: center;
-  gap: clamp(56px, 7vw, 110px);
+  gap: clamp(44px, 5vw, 82px);
   padding-block: 25px;
 }
 
@@ -149,14 +149,21 @@ a {
 }
 
 h1 {
+  max-width: 760px;
   margin: 0;
-  font-size: clamp(55px, 5.3vw, 84px);
-  line-height: 0.94;
+  font-size: clamp(50px, 4.7vw, 74px);
+  line-height: 0.92;
   letter-spacing: -0.065em;
   font-weight: 560;
+  text-wrap: balance;
+}
+
+.headline-finish {
+  white-space: nowrap;
 }
 
 h1 em {
+  margin-left: 0.1em;
   color: var(--lime);
   font-style: normal;
 }
@@ -542,7 +549,7 @@ h1 em {
   }
 
   h1 {
-    font-size: clamp(48px, 14.5vw, 67px);
+    font-size: clamp(44px, 11.5vw, 58px);
   }
 
   .lede {
@@ -609,6 +616,12 @@ h1 em {
   .footer span:nth-child(2),
   .footer span:last-child {
     text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .headline-finish {
+    white-space: normal;
   }
 }
 
