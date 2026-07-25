@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "See coding-agent token usage, electricity, and water estimates—entirely on your Mac.",
   openGraph: {
-    title: "AI Meter — Measure your AI locally",
+    title: "AI Meter — Measure your AI usage locally",
     description:
       "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     url: "https://ai-meter.app/",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Meter — Measure your AI locally",
+    title: "AI Meter — Measure your AI usage locally",
     description:
       "See Codex, Claude Code, Cursor, OpenCode, and Gemini CLI usage—entirely on your Mac.",
     images: ["/og-image.png"],
@@ -70,7 +70,7 @@ export default function Home() {
           </div>
 
           <h1>
-            Measure your AI.
+            Measure your AI usage.
             <br />
             <em>Locally.</em>
           </h1>
