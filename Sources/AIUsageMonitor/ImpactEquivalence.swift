@@ -1,24 +1,16 @@
 import Foundation
 
 enum ImpactEquivalence {
-    // EIA reports 865 kWh per month for the average U.S. residential
-    // electricity customer in 2024.
-    static let averageUSHomeKWhPerDay = 865.0 * 12.0 / 365.0
+    // Tesla publishes a Model 3 comparison consumption rating of
+    // 25.4 kWh per 100 miles.
+    static let teslaModel3KWhPerMile = 25.4 / 100.0
 
     // EPA WaterSense showerheads are rated at no more than 7.6 L/min.
     static let waterSenseShowerLitersPerMinute = 7.6
 
     static func electricity(_ kWh: Double) -> String {
-        let homeHours = max(0, kWh) / averageUSHomeKWhPerDay * 24
-        if homeHours < 1 {
-            let minutes = homeHours * 60
-            return "About \(quantity(minutes, singular: "minute", plural: "minutes")) of electricity for an average U.S. home"
-        }
-        if homeHours < 24 {
-            return "About \(quantity(homeHours, singular: "hour", plural: "hours")) of electricity for an average U.S. home"
-        }
-        let homeDays = homeHours / 24
-        return "About \(quantity(homeDays, singular: "day", plural: "days")) of electricity for an average U.S. home"
+        let miles = max(0, kWh) / teslaModel3KWhPerMile
+        return "Enough to drive a Tesla Model 3 about \(quantity(miles, singular: "mile", plural: "miles"))"
     }
 
     static func water(_ liters: Double) -> String {

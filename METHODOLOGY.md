@@ -87,16 +87,16 @@ The summary cards translate the calculated electricity and water values into
 familiar comparisons. These are display analogies only and do not add to or
 change the environmental estimate:
 
-- **Average U.S. home:** 865 kWh per month, the 2024 average grid-delivered
-  electricity consumption per U.S. residential customer reported by the U.S.
-  Energy Information Administration. AI Meter converts this to approximately
-  28.44 kWh per home-day.
+- **Tesla Model 3:** 25.4 kWh per 100 miles, the comparison consumption rating
+  published by Tesla. AI Meter converts this to 0.254 kWh per mile, or
+  approximately 3.94 miles per kWh.
 - **WaterSense shower:** 7.6 liters per minute, the maximum rated flow for an
   EPA WaterSense-labeled showerhead. Larger values are shown as the equivalent
   number of 15-minute showers.
 
-Actual households and showerheads vary. The comparisons describe quantity, not
-the source, location, or environmental consequences of that energy or water.
+Actual vehicle efficiency varies by trim, speed, weather, terrain, and driving
+style; showerheads vary too. The comparisons describe quantity, not the source,
+location, or environmental consequences of that energy or water.
 
 ## Exclusions
 
@@ -119,5 +119,5 @@ replace assumptions without changing the boundary or formulas.
 - Oviedo et al., [Energy Use of AI Inference, Efficiency Pathways, and Test-Time Scaling](https://arxiv.org/abs/2509.20241)
 - ISO, [ISO/IEC 30134-9:2022 — Water Usage Effectiveness](https://www.iso.org/standard/77692.html)
 - Lawrence Berkeley National Laboratory, [2024 United States Data Center Energy Usage Report](https://doi.org/10.71468/P1WC7Q)
-- U.S. Energy Information Administration, [2024 residential electricity consumption](https://www.eia.gov/todayinenergy/detail.php?id=65244)
+- Tesla, [Model 3 design and consumption rating](https://www.tesla.com/model3/design)
 - U.S. Environmental Protection Agency, [WaterSense showerhead technical sheet](https://www.epa.gov/system/files/documents/2023-08/ws-homes-TRM-4-ShowerheadsTechSheet.pdf)

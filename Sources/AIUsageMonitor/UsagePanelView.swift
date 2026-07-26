@@ -359,11 +359,11 @@ struct UsagePanelView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Label("Human-scale equivalents", systemImage: "equal.circle")
                         .font(.caption.weight(.semibold))
-                    Text("Electricity is compared with the 2024 U.S. residential average of 865 kWh/month. Water is compared with an EPA WaterSense shower at 7.6 L/min. These analogies do not change the impact estimate.")
+                    Text("Electricity is compared with a Tesla Model 3 consumption rating of 25.4 kWh/100 mi. Water is compared with an EPA WaterSense shower at 7.6 L/min. These analogies do not change the impact estimate.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     HStack(spacing: 12) {
-                        Link("EIA home baseline", destination: URL(string: "https://www.eia.gov/todayinenergy/detail.php?id=65244")!)
+                        Link("Tesla Model 3 baseline", destination: URL(string: "https://www.tesla.com/model3/design")!)
                         Link("EPA shower baseline", destination: URL(string: "https://www.epa.gov/system/files/documents/2023-08/ws-homes-TRM-4-ShowerheadsTechSheet.pdf")!)
                     }
                     .font(.caption2)

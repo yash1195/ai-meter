@@ -45,7 +45,7 @@ data boundary and update-check network behavior.
 - Interactive hourly, daily, or monthly chart with one series per coding harness.
 - Provider filters and provider/model breakdowns from actual local metadata.
 - Token, estimated electricity, and estimated water chart modes.
-- Familiar home-electricity and WaterSense-shower equivalents beside impact totals.
+- Familiar Tesla Model 3 driving-distance and WaterSense-shower equivalents beside impact totals.
 - SCI for AI-aligned methodology with adjustable environmental assumptions.
 - Live header activity meter driven by recent local token throughput.
 - Immediate startup from a derived on-device usage cache while sources refresh.
